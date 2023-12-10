@@ -1,6 +1,8 @@
 'use client'
 import { useState } from "react"
 
+// https://reactchallenges.live/challenge/1
+// Challenge: Show/Hide title
 export default function Day1() {
   const [show, setShow] = useState(false)
   return (
