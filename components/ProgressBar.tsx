@@ -22,7 +22,6 @@ function InnerProgressValue( props: InnerProgressValueProps) {
       } else if (hidden && outerElementWidth > textElementWidth + 10) {
         setHidden(false)
       }
-      console.log(value)
     }
   }, [debouncedUpdateValue])
 
