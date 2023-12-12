@@ -17,6 +17,9 @@ export default function Home() {
         <li>
           <Link href="/day4">ProgressBar</Link>
         </li>
+        <li>
+          <Link href="/day5">Nextjs Router handler & fetch</Link>
+        </li>
       </ul>
     </main>
   )
