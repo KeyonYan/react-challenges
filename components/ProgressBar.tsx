@@ -1,42 +1,89 @@
-import { useRef, useState, useEffect } from "react"
+import { useRef, useState, useEffect, forwardRef, HTMLAttributes } from "react"
 import { useDebounce } from "@uidotdev/usehooks";
 import styles from './ProgressBar.module.css'
+import { cn } from "@/lib/utils"
+import { cva, type VariantProps } from "class-variance-authority"
 
-interface InnerProgressValueProps {
-  value: number
+export interface ProgressBoxProps extends VariantProps<typeof progressBoxVariants>{}
+const progressBoxVariants = cva(
+  "rounded-lg shadow-lg",
+  {
+    variants: {
+      variant: {
+        default: "bg-[#f4f4f5]",
+        bright: "bg-[#cdcdcd]",
+        dark: "bg-[#27272a]"
+      },
+      size: {
+        default: "h-8",
+        sm: "h-6",
+        lg: "h-12"
+      }
+    },
+    defaultVariants: {
+      variant: "default",
+      size: "default"
+    }
+  }
+)
+
+export interface ProgressValueProps extends HTMLAttributes<HTMLElement>, VariantProps<typeof progressValueVariants>{
+  value: number,
   max: number
 }
-
-function InnerProgressValue( props: InnerProgressValueProps) {
-  const { value, max } = props
-  const [hidden, setHidden] = useState(true)
-  const valueElement = useRef<HTMLDivElement>(null)
-  const innerProgressElement = useRef<HTMLDivElement>(null)
-  const debouncedUpdateValue = useDebounce(value, 300);
-  useEffect(() => {
-    if (debouncedUpdateValue) {
-      const outerElementWidth = innerProgressElement.current?.offsetWidth ?? 0
-      const textElementWidth = valueElement.current?.offsetWidth ?? 0
-      if (!hidden && outerElementWidth <= textElementWidth + 10) {
-        setHidden(true)
-      } else if (hidden && outerElementWidth > textElementWidth + 10) {
-        setHidden(false)
-      }
+const progressValueVariants = cva(
+  "h-full transition-width duration-500 ease-in-out text-lg flex justify-center items-center rounded-lg",
+  {
+    variants: {
+      variant: {
+        default: "bg-[#18181b] text-white",
+        bright: "bg-gradient-to-r from-[#ff9a9e] to-[#fad0c4] text-white",
+        dark: "bg-[#fafafa] text-[#27272a]"
+      },
+    },
+    defaultVariants: {
+      variant: "default"
     }
-  }, [debouncedUpdateValue])
+  }
+)
 
-  return (
-    <div ref={innerProgressElement} className={`${styles.animateGradientBg} transition-width duration-500 ease-in-out text-lg h-7 text-white flex justify-center rounded-lg bg-gradient-to-r from-[#ff9a9e] to-[#fad0c4]`} style={{ width: `${value/max*100}%`}}>
-      <div className={`${hidden ? 'opacity-0' : 'opacity-100 w-auto'} w-auto transition-opacity duration-1000 ease-in-out`} ref={valueElement}>{value}%</div>
-    </div>
-  )
-}
+export interface ProgressProps extends HTMLAttributes<HTMLElement>, ProgressBoxProps, ProgressValueProps {}
+export const ProgressBar = forwardRef<HTMLDivElement, ProgressProps>(
+  ({ className, variant, size, value, max, ...props}, ref) => {
+    return (
+      <div className={cn(progressBoxVariants({ variant, size, className }))} ref={ref} {...props}>
+        <ProgressValue className={cn(progressValueVariants({variant}))} value={value} max={max} />
+      </div>
+    )
+  }
+)
+ProgressBar.displayName = 'ProgressBar'
 
-export default function ProgressBar(props: InnerProgressValueProps) {
-  let { value, max } = props
-  return (
-    <div className='rounded-lg border-2 bg-[#cdcdcd] shadow-lg h-8'>
-      <InnerProgressValue value={value} max={max} />
-    </div>
-  )
-}
+export const ProgressValue = forwardRef<HTMLDivElement, ProgressValueProps>(
+  ({ className, variant, value, max, ...props}, ref) => {
+    const [hidden, setHidden] = useState(true)
+    const valueElement = useRef<HTMLDivElement>(null)
+    const innerProgressElement = useRef<HTMLDivElement>(null)
+    const debouncedUpdateValue = useDebounce(value, 300);
+    useEffect(() => {
+      if (debouncedUpdateValue) {
+        const outerElementWidth = innerProgressElement.current?.offsetWidth ?? 0
+        const textElementWidth = valueElement.current?.offsetWidth ?? 0
+        if (!hidden && outerElementWidth <= textElementWidth + 10) {
+          setHidden(true)
+        } else if (hidden && outerElementWidth > textElementWidth + 10) {
+          setHidden(false)
+        }
+      }
+    }, [debouncedUpdateValue])
+    return (
+      <div ref={innerProgressElement} {...props} style={{ width: `${value/max*100}%`}} className={`${styles.animateGradientBg} ${className}`}>
+        <div className={`${hidden ? 'opacity-0' : 'opacity-100'} select-none leading-loose w-auto transition-opacity duration-1000 ease-in-out`} ref={valueElement}>{value}%</div>
+      </div>
+    )
+  }
+)
+
+ProgressValue.displayName = 'ProgressValue'
+
+export default ProgressBar;
