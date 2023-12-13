@@ -20,6 +20,9 @@ export default function Home() {
         <li>
           <Link href="/day5">Nextjs Router handler & fetch</Link>
         </li>
+        <li>
+          <Link href="/day6">Resizable Card</Link>
+        </li>
       </ul>
     </main>
   )
