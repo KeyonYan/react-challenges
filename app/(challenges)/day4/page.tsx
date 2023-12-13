@@ -1,6 +1,6 @@
 'use client'
 import { ChangeEventHandler, useState } from "react"
-import Progress from "@/components/ProgressBar"
+import Progress from "@/components/ProgressBar/ProgressBar"
 
 type Variant = "default" | "bright" | "dark" | null | undefined
 type Size = "default" | "sm" | "lg" | "xl" | null | undefined
