@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils"
-import { Dispatch, HTMLAttributes, MouseEventHandler, SetStateAction, forwardRef, useState } from "react"
+import { Dispatch, HTMLAttributes, MouseEventHandler, SetStateAction, forwardRef, useRef, useState } from "react"
 
 type Axis = 'x' | 'y' | 'xy'
 
@@ -23,10 +23,8 @@ const CardHandle = forwardRef<HTMLDivElement, CardHandleProps>(
           onMouseMove={onCardResize}
           onMouseDown={onCardResizeStart}
           onMouseUp={onCardResizeEnd}
-          className={cn(hover ? 'opacity-100' : 'opacity-0', 'absolute bottom-0 right-0 flex justify-center items-center w-1/5 h-1/5')}
+          className='cursor-nwse-resize absolute bottom-0 right-0 flex justify-center items-center w-1/5 h-1/5'
         >
-          <div className='border-4 w-1/2 h-1/2 border-[#6f6f6f] rounded-br-lg'></div>
-          <div className='absolute mb-2 mr-2 border-1 bg-white w-1/2 h-1/2 rounded-br-lg'></div>
         </div>
       )
     }
@@ -71,7 +69,6 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
 )
 
 Card.displayName = 'Card'
-
 
 export interface ResizableBoxProps extends HTMLAttributes<HTMLDivElement> {
   height: number
