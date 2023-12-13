@@ -15,9 +15,10 @@ const progressBoxVariants = cva(
         dark: "bg-[#27272a]"
       },
       size: {
-        default: "h-8",
-        sm: "h-6",
-        lg: "h-12"
+        default: "h-6 w-60",
+        sm: "h-4 w-60",
+        lg: "h-8 w-60",
+        xl: "h-10 w-60"
       }
     },
     defaultVariants: {
