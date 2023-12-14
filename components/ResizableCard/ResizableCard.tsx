@@ -97,12 +97,18 @@ export const ResizableCard = forwardRef<HTMLDivElement, CardProps>(
         setWidth(boxRef.current.offsetWidth)
       }
     }, [])
+    useEffect(() => {
+      if (boxRef.current && height != 0 && width != 0) {
+        boxRef.current.style.height = height + 'px'
+        boxRef.current.style.width = width + 'px'
+      }
+    }, [height, width])
     return (
       <div ref={boxRef} className={cn(className, 'rounded-lg')}>
         <div
           ref={ref}
           style={{height: height, width: width}}
-          className='border rounded-lg bg-card text-card-foreground shadow-sm flex justify-center items-center relative'
+          className={cn(className, 'border rounded-lg text-card-foreground shadow-sm flex justify-center items-center relative')}
           {...props}
           onMouseEnter={() => setHover(true)}
           onMouseLeave={() => setHover(false)}
