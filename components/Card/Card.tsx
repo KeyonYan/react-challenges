@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils"
-import {  Dispatch, DragEventHandler, HTMLAttributes, MouseEventHandler, SetStateAction, forwardRef, useState } from "react"
+import { Dispatch, DragEventHandler, HTMLAttributes, MouseEventHandler, SetStateAction, forwardRef, useState } from "react"
 import { MixerHorizontalIcon } from '@radix-ui/react-icons'
 
 type Axis = 'x' | 'y' | 'xy'
@@ -17,7 +17,6 @@ const CardHandle = forwardRef<HTMLDivElement, CardHandleProps>(
   ({className, hover, axis, height, width, onChangeHeight, onChangeWidth, ...props}, ref) => {
     const [isDragging, setIsDragging] = useState<boolean>(false);
     const [mousePos, setMousePos] = useState<{x: number, y: number}>({x: 0, y: 0})
-    const dragImage = new Image();
     const resizeBox: MouseEventHandler<HTMLDivElement> = (e) => {
       if (axis.includes('y')) {
         const diffY = e.clientY - mousePos.y
@@ -35,6 +34,7 @@ const CardHandle = forwardRef<HTMLDivElement, CardHandleProps>(
       }
     }
     const handleResizeStart: DragEventHandler<HTMLDivElement> = (e) => {
+      const dragImage = new Image()
       e.dataTransfer?.setDragImage(dragImage, 0, 0); // transparent drag image
       setIsDragging(true)
       const newMousePos = {x: e.clientX, y: e.clientY}
@@ -86,8 +86,8 @@ CardHandle.displayName = 'CardHandle'
 export interface CardProps extends HTMLAttributes<HTMLDivElement> {
   height: number
   width: number
-  onChangeHeight: Dispatch<SetStateAction<number>>
-  onChangeWidth: Dispatch<SetStateAction<number>>
+  onChangeHeight?: Dispatch<SetStateAction<number>>
+  onChangeWidth?: Dispatch<SetStateAction<number>>
 }
 
 export const Card = forwardRef<HTMLDivElement, CardProps>(
@@ -102,10 +102,11 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
         onMouseEnter={() => setHover(true)}
         onMouseLeave={() => setHover(false)}
       >
+        {children}
         <MixerHorizontalIcon className={cn(hover ? 'opacity-100' : 'opacity-0', 'transition-opacity duration-700 ease-out absolute top-2 right-2')} />
-        <CardHandle hover={hover} axis='y' height={height} width={width} onChangeHeight={(h) => onChangeHeight(h)} onChangeWidth={(w) => onChangeWidth(w)} />
-        <CardHandle hover={hover} axis='x' height={height} width={width} onChangeHeight={(h) => onChangeHeight(h)} onChangeWidth={(w) => onChangeWidth(w)} />
-        <CardHandle hover={hover} axis='xy' height={height} width={width} onChangeHeight={(h) => onChangeHeight(h)} onChangeWidth={(w) => onChangeWidth(w)} />
+        <CardHandle hover={hover} axis='y' height={height} width={width} onChangeHeight={(h) => onChangeHeight ? onChangeHeight(h) : null} onChangeWidth={(w) => onChangeWidth ? onChangeWidth(w) : null} />
+        <CardHandle hover={hover} axis='x' height={height} width={width} onChangeHeight={(h) => onChangeHeight ? onChangeHeight(h) : null} onChangeWidth={(w) => onChangeWidth ? onChangeWidth(w) : null} />
+        <CardHandle hover={hover} axis='xy' height={height} width={width} onChangeHeight={(h) => onChangeHeight ? onChangeHeight(h) : null} onChangeWidth={(w) => onChangeWidth ? onChangeWidth(w) : null} />
       </div>
     )
   }
