@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils"
-import { Dispatch, DragEventHandler, HTMLAttributes, MouseEventHandler, SetStateAction, forwardRef, useState } from "react"
+import { Dispatch, DragEventHandler, HTMLAttributes, MouseEventHandler, SetStateAction, forwardRef, useEffect, useImperativeHandle, useLayoutEffect, useRef, useState } from "react"
 import { MixerHorizontalIcon } from '@radix-ui/react-icons'
 
 type Axis = 'x' | 'y' | 'xy'
@@ -83,30 +83,36 @@ const Handle = forwardRef<HTMLDivElement, HandleProps>(
 
 Handle.displayName = 'Handle'
 
-export interface CardProps extends HTMLAttributes<HTMLDivElement> {
-  height: number
-  width: number
-  onChangeHeight?: Dispatch<SetStateAction<number>>
-  onChangeWidth?: Dispatch<SetStateAction<number>>
-}
+export interface CardProps extends HTMLAttributes<HTMLDivElement> {}
 
 export const ResizableCard = forwardRef<HTMLDivElement, CardProps>(
-  ({ className, children, height, width, onChangeHeight, onChangeWidth, ...props}, ref) => {
+  ({ className, children, ...props}, ref) => {
+    const [height, setHeight] = useState(0)
+    const [width, setWidth] = useState(0)
     const [hover, setHover] = useState(false)
+    const boxRef = useRef<HTMLDivElement>(null)
+    useLayoutEffect(() => {
+      if (boxRef.current) {
+        setHeight(boxRef.current.offsetHeight)
+        setWidth(boxRef.current.offsetWidth)
+      }
+    }, [])
     return (
-      <div
-        ref={ref}
-        style={{height: height, width: width}}
-        className={cn('w-60 rounded-lg border bg-card text-card-foreground shadow-sm flex justify-center items-center relative', className)}
-        {...props}
-        onMouseEnter={() => setHover(true)}
-        onMouseLeave={() => setHover(false)}
-      >
-        {children}
-        <MixerHorizontalIcon className={cn(hover ? 'opacity-100' : 'opacity-0', 'transition-opacity duration-700 ease-out absolute top-2 right-2')} />
-        {onChangeHeight && <Handle hover={hover} axis='y' height={height} onChangeHeight={(h) => onChangeHeight(h)} />}
-        {onChangeWidth && <Handle hover={hover} axis='x' width={width} onChangeWidth={(w) => onChangeWidth(w)} />}
-        {onChangeHeight && onChangeWidth && <Handle hover={hover} axis='xy' height={height} width={width} onChangeHeight={(h) => onChangeHeight(h)} onChangeWidth={(w) => onChangeWidth(w)} />}
+      <div ref={boxRef} className={cn(className, 'rounded-lg')}>
+        <div
+          ref={ref}
+          style={{height: height, width: width}}
+          className='border rounded-lg bg-card text-card-foreground shadow-sm flex justify-center items-center relative'
+          {...props}
+          onMouseEnter={() => setHover(true)}
+          onMouseLeave={() => setHover(false)}
+        >
+          {children}
+          <MixerHorizontalIcon className={cn(hover ? 'opacity-100' : 'opacity-0', 'transition-opacity duration-700 ease-out absolute top-2 right-2')} />
+          <Handle hover={hover} axis='y' height={height} onChangeHeight={setHeight} />
+          <Handle hover={hover} axis='x' width={width} onChangeWidth={setWidth} />
+          <Handle hover={hover} axis='xy' height={height} width={width} onChangeHeight={setHeight} onChangeWidth={setWidth} />
+        </div>
       </div>
     )
   }
@@ -115,12 +121,11 @@ export const ResizableCard = forwardRef<HTMLDivElement, CardProps>(
 ResizableCard.displayName = 'ResizableCard'
 
 export const Card = forwardRef<HTMLDivElement, CardProps>(
-  ({ className, children, height, width, ...props}, ref) => {
+  ({ className, children, ...props}, ref) => {
     return (
       <div
         ref={ref}
-        style={{height: height, width: width}}
-        className={cn('w-60 rounded-lg border bg-card text-card-foreground shadow-sm flex justify-center items-center relative', className)}
+        className={cn('w-full h-full rounded-lg border bg-card text-card-foreground shadow-sm flex justify-center items-center relative', className)}
         {...props}
       >
         {children}
