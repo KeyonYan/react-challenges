@@ -17,7 +17,7 @@ const CardHandle = forwardRef<HTMLDivElement, CardHandleProps>(
   ({className, hover, axis, height, width, onChangeHeight, onChangeWidth, ...props}, ref) => {
     const [isDragging, setIsDragging] = useState<boolean>(false);
     const [mousePos, setMousePos] = useState<{x: number, y: number}>({x: 0, y: 0})
-    const resizeBox = (e: MouseEvent) => {
+    const resizeBox: MouseEventHandler<HTMLDivElement> = (e) => {
       if (axis.includes('y')) {
         const diffY = e.clientY - mousePos.y
         const newHeight = height + diffY;
@@ -33,7 +33,7 @@ const CardHandle = forwardRef<HTMLDivElement, CardHandleProps>(
         setMousePos(newMousePos)
       }
     }
-    const handleResizeStart: MouseEventHandler<HTMLDivElement> = (e) => {
+    const handleResizeStart: DragEventHandler<HTMLDivElement> = (e) => {
       setIsDragging(true)
       const newMousePos = {x: e.clientX, y: e.clientY}
       setMousePos(newMousePos)
