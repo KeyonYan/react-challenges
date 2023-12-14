@@ -17,6 +17,7 @@ const CardHandle = forwardRef<HTMLDivElement, CardHandleProps>(
   ({className, hover, axis, height, width, onChangeHeight, onChangeWidth, ...props}, ref) => {
     const [isDragging, setIsDragging] = useState<boolean>(false);
     const [mousePos, setMousePos] = useState<{x: number, y: number}>({x: 0, y: 0})
+    const dragImage = new Image();
     const resizeBox: MouseEventHandler<HTMLDivElement> = (e) => {
       if (axis.includes('y')) {
         const diffY = e.clientY - mousePos.y
@@ -34,17 +35,18 @@ const CardHandle = forwardRef<HTMLDivElement, CardHandleProps>(
       }
     }
     const handleResizeStart: DragEventHandler<HTMLDivElement> = (e) => {
+      e.dataTransfer?.setDragImage(dragImage, 0, 0); // transparent drag image
       setIsDragging(true)
       const newMousePos = {x: e.clientX, y: e.clientY}
       setMousePos(newMousePos)
     }
+    const handleResize: DragEventHandler<HTMLDivElement> = (e) => {
+      if (!isDragging) return
+      resizeBox(e)
+    }
     const handleResizeEnd: DragEventHandler<HTMLDivElement> = (e) => {
       if (!isDragging) return
       setIsDragging(false)
-      resizeBox(e)
-    }
-    const handleResize: DragEventHandler<HTMLDivElement> = (e) => {
-      if (!isDragging) return
       resizeBox(e)
     }
     const handleBoxStyle = `${axis.includes('y') ? 'bottom-0 w-1/2 h-8 cursor-row-resize flex-row' : ''} ${axis.includes('x') ? 'right-0 h-1/2 w-8 cursor-col-resize flex-col' : ''}`
