@@ -21,9 +21,9 @@ const CardHandle = forwardRef<HTMLDivElement, CardHandleProps>(
       return (
         <div
           ref={ref}
-          onMouseMove={onCardResize}
-          onMouseDown={onCardResizeStart}
-          onMouseUp={onCardResizeEnd}
+          onDrag={onCardResize}
+          onDragStart={onCardResizeStart}
+          onDragEnd={onCardResizeEnd}
           className='cursor-nwse-resize absolute bottom-0 right-0 flex justify-center items-center w-1/5 h-1/5'
         >
         </div>
@@ -32,9 +32,9 @@ const CardHandle = forwardRef<HTMLDivElement, CardHandleProps>(
     return (
       <div
         ref={ref}
-        onMouseMove={onCardResize}
-        onMouseDown={onCardResizeStart}
-        onMouseUp={onCardResizeEnd}
+        onDrag={onCardResize}
+        onDragStart={onCardResizeStart}
+        onDragEnd={onCardResizeEnd}
         className={cn(hover ? 'opacity-100' : 'opacity-0', handleBoxStyle, 'absolute flex items-end justify-center transition-opacity duration-700 ease-out ')}
       >
         <div className={cn(handleStyle, 'rounded-lg bg-[#6f6f6f]')}></div>
