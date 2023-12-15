@@ -110,7 +110,7 @@ export const ResizableCard = forwardRef<HTMLDivElement, CardProps>(
         <div
           ref={ref}
           style={{height: height, width: width}}
-          className={cn(className, 'border rounded-lg text-card-foreground shadow-sm flex justify-center items-center relative')}
+          className={cn(className, 'border rounded-lg shadow-sm flex justify-center items-center relative')}
           {...props}
           onMouseEnter={() => setHover(true)}
           onMouseLeave={() => setHover(false)}
@@ -133,7 +133,7 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
     return (
       <div
         ref={ref}
-        className={cn('w-full h-full rounded-lg border bg-card text-card-foreground shadow-sm flex justify-center items-center relative', className)}
+        className={cn('w-full h-full rounded-lg border shadow-sm flex justify-center items-center relative', className)}
         {...props}
       >
         {children}

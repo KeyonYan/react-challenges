@@ -1,9 +1,6 @@
-.draggableContainer {
-  display: grid;
-  grid-template-columns: repeat(40, minmax(0, 1fr));
-  grid-template-rows: repeat(40, minmax(0, 1fr));
+.draggableArea {
+  
 }
-
 .draggableBox {
   
 }
