@@ -1,8 +1,6 @@
-import { DragEventHandler, HTMLAttributes, forwardRef, useLayoutEffect, useRef, useState } from "react"
+import { DragEventHandler, HTMLAttributes, forwardRef, useRef, useState } from "react"
 import styles from './Draggable.module.css'
 import { cn } from "@/lib/utils"
-import { setgroups } from "process"
-
 
 export interface DraggableAreaProps extends HTMLAttributes<HTMLDivElement> {
 }
@@ -21,13 +19,13 @@ export const DraggableArea = forwardRef<HTMLDivElement, DraggableAreaProps>(
 
 DraggableArea.displayName = 'DraggableArea'
 
-export interface DraggableBoxProps extends HTMLAttributes<HTMLDivElement> {
-}
+export interface DraggableBoxProps extends HTMLAttributes<HTMLDivElement> {}
 
 export const DraggableBox = forwardRef<HTMLDivElement, DraggableBoxProps>(
   ({className, children, ...props}, ref) => {
     const [mousePos, setMousePos] = useState({x: 0, y: 0})
     const [posToArea, setPosToArea] = useState({x: 100, y: 100})
+    const boxRef = useRef<HTMLDivElement>(null)
     const handleDragStart: DragEventHandler<HTMLDivElement> = (e) => {
       e.stopPropagation()
       setMousePos({x: e.clientX, y: e.clientY})
@@ -60,18 +58,22 @@ export const DraggableBox = forwardRef<HTMLDivElement, DraggableBoxProps>(
       e.stopPropagation()
       setMousePos({x: e.clientX, y: e.clientY})
     }
+    const handleDragOver: DragEventHandler<HTMLDivElement> = (e) => {
+      e.preventDefault()
+    }
     return (
       <div
-        ref={ref}
+        ref={boxRef}
         draggable
         onDragStart={handleDragStart}
         onDrag={handleDrag}
         onDragEnd={handleDragEnd}
+        onDragOver={handleDragOver}
         style={{
           position: 'absolute',
           left: posToArea.x,
           top: posToArea.y,
-          userSelect: 'none'
+          userSelect: 'none',
         }}
         className={cn(styles.draggableBox)}
       >

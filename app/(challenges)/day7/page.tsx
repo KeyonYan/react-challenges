@@ -11,9 +11,14 @@ const Day7 = () => {
       <div className="text-2xl font-bold">Draggable Card</div>
       <DraggableArea className='w-[500px] h-[500px] rounded-lg border shadow-sm'>
         <div className="p-4">DraggableArea</div>
-        <DraggableBox className='w-[200px] h-[300px]'>
-          <ResizableCard className='h-[300px] w-[200px]'>
+        <DraggableBox className='w-[200px] h-[300p]'>
+          <ResizableCard className='h-[300px] w-[200px] bg-red-100'>
             <GitHubLogoIcon className='w-10 h-10' />
+          </ResizableCard>
+        </DraggableBox>
+        <DraggableBox className='w-[200px] h-[300px]'>
+          <ResizableCard className='h-[300px] w-[200px] text-4xl bg-blue-100'>
+            😁
           </ResizableCard>
         </DraggableBox>
       </DraggableArea>
