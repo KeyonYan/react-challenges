@@ -34,6 +34,7 @@ const Handle = forwardRef<HTMLDivElement, HandleProps>(
       }
     }
     const handleResizeStart: DragEventHandler<HTMLDivElement> = (e) => {
+      e.stopPropagation()
       const dragImage = new Image()
       e.dataTransfer?.setDragImage(dragImage, 0, 0); // transparent drag image
       setIsDragging(true)
@@ -41,6 +42,7 @@ const Handle = forwardRef<HTMLDivElement, HandleProps>(
       setMousePos(newMousePos)
     }
     const handleResize: DragEventHandler<HTMLDivElement> = (e) => {
+      e.stopPropagation()
       if (!isDragging) return
       resizeBox(e)
     }
