@@ -28,13 +28,10 @@ export const DraggableArea = forwardRef<HTMLDivElement, DraggableAreaProps>(
 
 DraggableArea.displayName = 'DraggableArea'
 
-export interface DraggableBoxProps extends HTMLAttributes<HTMLDivElement> {
-  maxindex: number
-  onChangeMaxIndex: Dispatch<SetStateAction<number>>
-}
+export interface DraggableBoxProps extends HTMLAttributes<HTMLDivElement> {}
 
 export const DraggableBox = forwardRef<HTMLDivElement, DraggableBoxProps>(
-  ({className, children, maxindex, onChangeMaxIndex, ...props}, ref) => {
+  ({className, children, ...props}, ref) => {
     const [mousePos, setMousePos] = useState({x: 0, y: 0})
     const [posToArea, setPosToArea] = useState({x: 100, y: 100})
     const boxRef = useRef<HTMLDivElement>(null)
