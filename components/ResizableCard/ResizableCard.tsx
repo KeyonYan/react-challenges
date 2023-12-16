@@ -1,6 +1,7 @@
 import { cn } from "@/lib/utils"
-import { Dispatch, DragEventHandler, HTMLAttributes, MouseEventHandler, SetStateAction, forwardRef, useEffect, useImperativeHandle, useLayoutEffect, useRef, useState } from "react"
+import { DragEventHandler, HTMLAttributes, MouseEventHandler, forwardRef, useEffect, useLayoutEffect, useRef, useState } from "react"
 import { MixerHorizontalIcon } from '@radix-ui/react-icons'
+import { DropdownMenu, DropdownMenuCheckboxItemProps, DropdownMenuContent, DropdownMenuLabel, DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu"
 
 type Axis = 'x' | 'y' | 'xy'
 
@@ -85,10 +86,12 @@ const Handle = forwardRef<HTMLDivElement, HandleProps>(
 
 Handle.displayName = 'Handle'
 
-export interface CardProps extends HTMLAttributes<HTMLDivElement> {}
+export interface CardProps extends HTMLAttributes<HTMLDivElement> {
+  fixable?: boolean
+}
 
 export const ResizableCard = forwardRef<HTMLDivElement, CardProps>(
-  ({ className, children, ...props}, ref) => {
+  ({ className, children, fixable, ...props}, ref) => {
     const [height, setHeight] = useState(0)
     const [width, setWidth] = useState(0)
     const [hover, setHover] = useState(false)
@@ -116,10 +119,13 @@ export const ResizableCard = forwardRef<HTMLDivElement, CardProps>(
           onMouseLeave={() => setHover(false)}
         >
           {children}
-          <MixerHorizontalIcon className={cn(hover ? 'opacity-100' : 'opacity-0', 'transition-opacity duration-700 ease-out absolute top-2 right-2')} />
-          <Handle hover={hover} axis='y' height={height} onChangeHeight={setHeight} />
-          <Handle hover={hover} axis='x' width={width} onChangeWidth={setWidth} />
-          <Handle hover={hover} axis='xy' height={height} width={width} onChangeHeight={setHeight} onChangeWidth={setWidth} />
+          { !fixable && 
+            <>
+              <Handle hover={hover} axis='y' height={height} onChangeHeight={setHeight} />
+              <Handle hover={hover} axis='x' width={width} onChangeWidth={setWidth} />
+              <Handle hover={hover} axis='xy' height={height} width={width} onChangeHeight={setHeight} onChangeWidth={setWidth} />
+            </>
+          }
         </div>
       </div>
     )

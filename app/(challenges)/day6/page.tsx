@@ -14,7 +14,7 @@ const Day6 = () => {
         <ResizableCard className='w-[200px] h-[300px] bg-[#cbcdff] min-w-[60px] min-h-[60px]'>
           <DiscordLogoIcon className='w-10 h-10' color='#5560ee' />
         </ResizableCard>
-        <ResizableCard className='w-[200px] h-[300px] bg-[#e4fc82] min-w-[60px] min-h-[60px]'>
+        <ResizableCard fixable className='w-[200px] h-[300px] bg-[#e4fc82] min-w-[60px] min-h-[60px]'>
           <CodeSandboxLogoIcon className='w-10 h-10' />
         </ResizableCard>
       </div>
