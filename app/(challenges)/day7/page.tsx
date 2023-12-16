@@ -12,12 +12,12 @@ const Day7 = () => {
       <DraggableArea className='w-[500px] h-[500px] rounded-lg border shadow-sm'>
         <div className="p-4">DraggableArea</div>
         <DraggableBox>
-          <ResizableCard className='h-[300px] w-[200px] bg-red-100 min-w-[50px] min-h-[50px]'>
+          <ResizableCard className='h-[300px] w-[200px] bg-red-100 min-w-[60px] min-h-[60px]'>
             <GitHubLogoIcon className='w-10 h-10' />
           </ResizableCard>
         </DraggableBox>
         <DraggableBox>
-          <ResizableCard className='h-[300px] w-[200px] text-4xl bg-blue-100 min-w-[50px] min-h-[50px]'>
+          <ResizableCard className='h-[300px] w-[200px] text-4xl bg-blue-100 min-w-[60px] min-h-[60px]'>
             😁
           </ResizableCard>
         </DraggableBox>
