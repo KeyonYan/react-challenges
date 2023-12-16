@@ -47,6 +47,7 @@ export const DraggableBox = forwardRef<HTMLDivElement, DraggableBoxProps>(
       if (!e.currentTarget.parentElement) return
       if (e.clientX == 0 && e.clientY == 0) return
       e.dataTransfer.setDragImage(new Image(), 0, 0)
+      e.dataTransfer.setData('', '')
       const boxRect = e.currentTarget.getBoundingClientRect()
       const areaRect = e.currentTarget.parentElement?.getBoundingClientRect()
       const newPosToArea = {
