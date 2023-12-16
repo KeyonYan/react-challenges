@@ -1,5 +1,5 @@
 'use client'
-import { ResizableCard, Card } from "@/components/ResizableCard/ResizableCard";
+import { ResizableCard } from "@/components/ResizableCard/ResizableCard";
 import { GitHubLogoIcon, DiscordLogoIcon, CodeSandboxLogoIcon } from '@radix-ui/react-icons'
 
 const Day6 = () => {

@@ -1,4 +1,4 @@
-import React, { Children, Dispatch, DragEventHandler, HTMLAttributes, SetStateAction, forwardRef, useRef, useState } from "react"
+import React, { Children, DragEventHandler, HTMLAttributes, forwardRef, useRef, useState } from "react"
 import styles from './Draggable.module.css'
 import { cn } from "@/lib/utils"
 
@@ -9,12 +9,11 @@ export let maxZIndex = 1
 
 export const DraggableArea = forwardRef<HTMLDivElement, DraggableAreaProps>(
   ({className, children, ...props}, ref) => {
-    const [maxindex, setMaxindex] = useState(Children.count(children))
     return (
       <div
         className={cn(className, 'relative', styles.draggableArea)}
       >
-        {Children.map(children, (child, index) => {
+        {Children.map(children, (child) => {
           if (!React.isValidElement(child)) return
           const childProps = {
             ...child.props,
@@ -28,10 +27,12 @@ export const DraggableArea = forwardRef<HTMLDivElement, DraggableAreaProps>(
 
 DraggableArea.displayName = 'DraggableArea'
 
-export interface DraggableBoxProps extends HTMLAttributes<HTMLDivElement> {}
+export interface DraggableBoxProps extends HTMLAttributes<HTMLDivElement> {
+  fixable?: boolean
+}
 
 export const DraggableBox = forwardRef<HTMLDivElement, DraggableBoxProps>(
-  ({className, children, ...props}, ref) => {
+  ({className, children, fixable, ...props}, ref) => {
     const [mousePos, setMousePos] = useState({x: 0, y: 0})
     const [posToArea, setPosToArea] = useState({x: 100, y: 100})
     const boxRef = useRef<HTMLDivElement>(null)
@@ -77,7 +78,7 @@ export const DraggableBox = forwardRef<HTMLDivElement, DraggableBoxProps>(
     return (
       <div
         ref={boxRef}
-        draggable
+        draggable={!fixable}
         onDragStart={handleDragStart}
         onDrag={handleDrag}
         onDragEnd={handleDragEnd}
