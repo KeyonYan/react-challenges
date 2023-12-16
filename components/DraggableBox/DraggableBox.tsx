@@ -1,4 +1,4 @@
-import { DragEventHandler, HTMLAttributes, forwardRef, useRef, useState } from "react"
+import React, { Children, Dispatch, DragEventHandler, HTMLAttributes, SetStateAction, forwardRef, useRef, useState } from "react"
 import styles from './Draggable.module.css'
 import { cn } from "@/lib/utils"
 
@@ -7,11 +7,20 @@ export interface DraggableAreaProps extends HTMLAttributes<HTMLDivElement> {
 
 export const DraggableArea = forwardRef<HTMLDivElement, DraggableAreaProps>(
   ({className, children, ...props}, ref) => {
+    const [maxIndex, setMaxIndex] = useState(Children.count(children))
     return (
       <div
         className={cn(className, 'relative', styles.draggableArea)}
       >
-        {children}
+        {Children.map(children, (child, index) => {
+          if (!React.isValidElement(child)) return
+          const childProps = {
+            ...child.props,
+            maxIndex: maxIndex,
+            onChangeMaxIndex: setMaxIndex
+          }
+          return React.cloneElement(child, childProps)
+        })}
       </div>
     )
   }
@@ -19,24 +28,31 @@ export const DraggableArea = forwardRef<HTMLDivElement, DraggableAreaProps>(
 
 DraggableArea.displayName = 'DraggableArea'
 
-export interface DraggableBoxProps extends HTMLAttributes<HTMLDivElement> {}
+export interface DraggableBoxProps extends HTMLAttributes<HTMLDivElement> {
+  maxIndex: number
+  onChangeMaxIndex: Dispatch<SetStateAction<number>>
+}
 
 export const DraggableBox = forwardRef<HTMLDivElement, DraggableBoxProps>(
-  ({className, children, ...props}, ref) => {
+  ({className, children, maxIndex, onChangeMaxIndex, ...props}, ref) => {
     const [mousePos, setMousePos] = useState({x: 0, y: 0})
     const [posToArea, setPosToArea] = useState({x: 100, y: 100})
     const boxRef = useRef<HTMLDivElement>(null)
     const handleDragStart: DragEventHandler<HTMLDivElement> = (e) => {
       e.stopPropagation()
       setMousePos({x: e.clientX, y: e.clientY})
+      if (e.currentTarget) {
+        e.currentTarget.style.zIndex = String(maxIndex + 1)
+        onChangeMaxIndex(maxIndex+1)
+      }
     }
     const handleDrag: DragEventHandler<HTMLDivElement> = (e) => {
       e.stopPropagation()
-      if (!e.currentTarget.parentElement) return
+      if (!e.currentTarget.parentElement?.parentElement) return
       if (e.clientX == 0 && e.clientY == 0) return
       e.dataTransfer.setDragImage(new Image(), 0, 0)
       const boxRect = e.currentTarget.getBoundingClientRect()
-      const areaRect = e.currentTarget.parentElement?.getBoundingClientRect()
+      const areaRect = e.currentTarget.parentElement?.parentElement.getBoundingClientRect()
       const newPosToArea = {
         x: e.currentTarget.offsetLeft + e.clientX - mousePos.x,
         y: e.currentTarget.offsetTop + e.clientY - mousePos.y
