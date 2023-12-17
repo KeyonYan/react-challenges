@@ -68,13 +68,13 @@ export default function Home() {
         <Link href="/day3">
           <Card className='p-4'>Todo list</Card>
         </Link>
-        <Link href="/day5">
+        <Link href="/day4">
           <Card className='p-4'>ProgressBar</Card>
         </Link>
-        <Link href="/day6">
+        <Link href="/day5">
           <Card className='p-4'>Nextjs Router handler & fetch</Card>
         </Link>
-        <Link href="/day7">
+        <Link href="/day6">
           <Card className='p-4'>Resizable Card</Card>
         </Link>
         <Link href="/day7">
