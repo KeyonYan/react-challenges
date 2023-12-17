@@ -70,10 +70,6 @@ export const DraggableBox = forwardRef<HTMLDivElement, DraggableBoxProps>(
     }
     const handleDragEnd: DragEventHandler<HTMLDivElement> = (e) => {
       e.stopPropagation()
-      setMousePos({x: e.clientX, y: e.clientY})
-    }
-    const handleDragOver: DragEventHandler<HTMLDivElement> = (e) => {
-      e.preventDefault()
     }
     return (
       <div
@@ -82,7 +78,6 @@ export const DraggableBox = forwardRef<HTMLDivElement, DraggableBoxProps>(
         onDragStart={handleDragStart}
         onDrag={handleDrag}
         onDragEnd={handleDragEnd}
-        onDragOver={handleDragOver}
         style={{
           position: 'absolute',
           left: posToArea.x,
