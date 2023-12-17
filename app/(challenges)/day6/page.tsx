@@ -1,12 +1,12 @@
 'use client'
-import { ResizableCard, Size } from "@/components/ResizableCard/ResizableCard";
+import { ResizableCard, CardSize } from "@/components/ResizableCard/ResizableCard";
 import { GitHubLogoIcon, DiscordLogoIcon, CodeSandboxLogoIcon } from '@radix-ui/react-icons'
 import { useState } from "react";
 
 const Day6 = () => {
-  const [firstCardSize, setFirstCardSize] = useState<Size>({h: 300, w: 200})
-  const [secondCardSize, setSecondCardSize] = useState<Size>({h: 300, w: 200})
-  const [thirdCardSize, setThirdCardSize] = useState<Size>({h: 300, w: 200})
+  const [firstCardSize, setFirstCardSize] = useState<CardSize>({h: 300, w: 200})
+  const [secondCardSize, setSecondCardSize] = useState<CardSize>({h: 300, w: 200})
+  const [thirdCardSize, setThirdCardSize] = useState<CardSize>({h: 300, w: 200})
   return (
     <div className="p-4 flex flex-col gap-4">
       <h1 className="text-xl font-bold">Day 6</h1>
