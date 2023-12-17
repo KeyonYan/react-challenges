@@ -1,10 +1,12 @@
 'use client'
 import { DraggableArea, DraggableBox } from "@/components/DraggableBox/DraggableBox";
-import { ResizableCard } from "@/components/ResizableCard/ResizableCard";
+import { ResizableCard, CardSize } from "@/components/ResizableCard/ResizableCard";
 import { GitHubLogoIcon } from "@radix-ui/react-icons";
-import { useLayoutEffect, useRef, useState } from "react";
+import { useState } from "react";
 
 const Day7 = () => {
+  const [firstCardSize, setFirstCardSize] = useState<CardSize>({h: 300, w: 200})
+  const [secondCardSize, setSecondCardSize] = useState<CardSize>({h: 300, w: 200})
   return (
     <div className="p-4 flex flex-col gap-4">
       <h1 className="text-xl font-bold">Day 7</h1>
@@ -12,12 +14,12 @@ const Day7 = () => {
       <DraggableArea className='w-[500px] h-[500px] rounded-lg border shadow-sm'>
         <div className="p-4">DraggableArea</div>
         <DraggableBox>
-          <ResizableCard className='h-[300px] w-[200px] bg-red-100 min-w-[60px] min-h-[60px]'>
+          <ResizableCard size={firstCardSize} min={{h: 60, w: 60}} onChangeSize={setFirstCardSize} className='bg-red-100'>
             <GitHubLogoIcon className='w-10 h-10' />
           </ResizableCard>
         </DraggableBox>
         <DraggableBox>
-          <ResizableCard className='h-[300px] w-[200px] text-4xl bg-blue-100 min-w-[60px] min-h-[60px]'>
+          <ResizableCard size={secondCardSize} min={{h: 60, w: 60}} onChangeSize={setSecondCardSize} className='text-4xl bg-blue-100'>
             😁
           </ResizableCard>
         </DraggableBox>
