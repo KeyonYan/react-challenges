@@ -2,7 +2,7 @@
 import { DraggableArea, DraggableBox } from "@/components/DraggableBox/DraggableBox";
 import { ResizableCard, CardSize } from "@/components/ResizableCard/ResizableCard";
 import { GitHubLogoIcon } from "@radix-ui/react-icons";
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 const Day7 = () => {
   const [firstCardSize, setFirstCardSize] = useState<CardSize>({h: 300, w: 200})
@@ -11,8 +11,7 @@ const Day7 = () => {
     <div className="p-4 flex flex-col gap-4">
       <h1 className="text-xl font-bold">Day 7</h1>
       <div className="text-2xl font-bold">Draggable Card</div>
-      <DraggableArea className='w-[500px] h-[500px] rounded-lg border shadow-sm'>
-        <div className="p-4">DraggableArea</div>
+      <DraggableArea className='w-[1000px] h-[500px] rounded-lg border shadow-sm'>
         <DraggableBox>
           <ResizableCard size={firstCardSize} min={{h: 60, w: 60}} onChangeSize={setFirstCardSize} className='bg-red-100'>
             <GitHubLogoIcon className='w-10 h-10' />
