@@ -95,7 +95,7 @@ Handle.displayName = 'Handle'
 
 export type CardSize = {h: number, w: number}
 
-export interface CardProps extends HTMLAttributes<HTMLDivElement> {
+export interface ResizableCardProps extends HTMLAttributes<HTMLDivElement> {
   size: CardSize
   min?: CardSize
   max?: CardSize
@@ -103,7 +103,7 @@ export interface CardProps extends HTMLAttributes<HTMLDivElement> {
   onChangeSize: Dispatch<SetStateAction<CardSize>>
 }
 
-export const ResizableCard = forwardRef<HTMLDivElement, CardProps>(
+export const ResizableCard = forwardRef<HTMLDivElement, ResizableCardProps>(
   ({ className, children, fixable, size, min, max, onChangeSize, ...props}, ref) => {
     const [hover, setHover] = useState(false)
     return (
@@ -129,6 +129,8 @@ export const ResizableCard = forwardRef<HTMLDivElement, CardProps>(
 )
 
 ResizableCard.displayName = 'ResizableCard'
+
+export interface CardProps extends HTMLAttributes<HTMLDivElement> {}
 
 export const Card = forwardRef<HTMLDivElement, CardProps>(
   ({ className, children, ...props}, ref) => {
