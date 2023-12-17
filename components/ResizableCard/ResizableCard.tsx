@@ -1,7 +1,5 @@
 import { cn } from "@/lib/utils"
-import { DragEventHandler, HTMLAttributes, MouseEventHandler, forwardRef, useEffect, useLayoutEffect, useRef, useState } from "react"
-import { MixerHorizontalIcon } from '@radix-ui/react-icons'
-import { DropdownMenu, DropdownMenuCheckboxItemProps, DropdownMenuContent, DropdownMenuLabel, DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu"
+import { DragEventHandler, HTMLAttributes, MouseEventHandler, RefObject, forwardRef, useEffect, useLayoutEffect, useRef, useState } from "react"
 
 type Axis = 'x' | 'y' | 'xy'
 
@@ -15,10 +13,14 @@ export interface HandleProps extends HTMLAttributes<HTMLDivElement> {
 }
 
 const Handle = forwardRef<HTMLDivElement, HandleProps>(
-  ({className, hover, axis, height, width, onChangeHeight, onChangeWidth, ...props}, ref) => {
-    const [isDragging, setIsDragging] = useState<boolean>(false);
+  ({className, hover, axis, height, width, 
+    onChangeHeight, onChangeWidth, ...props}, ref) => {
     const [mousePos, setMousePos] = useState<{x: number, y: number}>({x: 0, y: 0})
     const resizeBox: MouseEventHandler<HTMLDivElement> = (e) => {
+      // boundary limit
+      if (e.clientY < 60) return
+      if (e.clientX < 60) return
+
       if (height && onChangeHeight && axis.includes('y')) {
         const diffY = e.clientY - mousePos.y
         const newHeight = height + diffY;
@@ -38,21 +40,18 @@ const Handle = forwardRef<HTMLDivElement, HandleProps>(
       e.stopPropagation()
       const dragImage = new Image()
       e.dataTransfer?.setDragImage(dragImage, 0, 0); // transparent drag image
-      setIsDragging(true)
       const newMousePos = {x: e.clientX, y: e.clientY}
       setMousePos(newMousePos)
     }
     const handleResize: DragEventHandler<HTMLDivElement> = (e) => {
       e.stopPropagation()
-      if (!isDragging) return
       resizeBox(e)
     }
     const handleResizeEnd: DragEventHandler<HTMLDivElement> = (e) => {
-      if (!isDragging) return
-      setIsDragging(false)
+      e.stopPropagation()
       resizeBox(e)
     }
-    const handleBoxStyle = `${axis.includes('y') ? 'bottom-0 w-1/2 h-8 cursor-row-resize flex-row' : ''} ${axis.includes('x') ? 'right-0 h-1/2 w-8 cursor-col-resize flex-col' : ''}`
+    const handleBoxStyle = `${axis.includes('y') ? 'bottom-0 w-1/2 h-1/6 cursor-row-resize flex-row' : ''} ${axis.includes('x') ? 'right-0 h-1/2 w-1/6 cursor-col-resize flex-col' : ''}`
     const handleStyle = `${axis.includes('y') ? 'w-1/2 h-1 mb-1' : ''} ${axis.includes('x') ? 'h-1/2 w-1 mr-1' : ''}`
     if (axis === 'xy') {
       return (
@@ -119,7 +118,7 @@ export const ResizableCard = forwardRef<HTMLDivElement, CardProps>(
           onMouseLeave={() => setHover(false)}
         >
           {children}
-          { !fixable && 
+          { !fixable && boxRef.current && 
             <>
               <Handle hover={hover} axis='y' height={height} onChangeHeight={setHeight} />
               <Handle hover={hover} axis='x' width={width} onChangeWidth={setWidth} />
