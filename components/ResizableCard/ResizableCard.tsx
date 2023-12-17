@@ -16,6 +16,8 @@ const Handle = forwardRef<HTMLDivElement, HandleProps>(
   ({className, hover, axis, size, min, max, onChangeSize, ...props}, ref) => {
     const [mousePos, setMousePos] = useState<{x: number, y: number}>({x: 0, y: 0})
     const resizeBox: MouseEventHandler<HTMLDivElement> = (e) => {
+      if (e.clientY <= 0 || e.clientX <= 0) return // avoid mouse to 0,0 when mouse up
+
       // compute diff
       let diffX = 0, diffY = 0
       if (axis === 'y') {
@@ -55,7 +57,7 @@ const Handle = forwardRef<HTMLDivElement, HandleProps>(
     }
     const handleResizeEnd: DragEventHandler<HTMLDivElement> = (e) => {
       e.stopPropagation()
-      // resizeBox(e)
+      resizeBox(e)
     }
     const handleBoxStyle = `${axis.includes('y') ? 'bottom-0 w-1/2 h-1/6 cursor-row-resize flex-row' : ''} ${axis.includes('x') ? 'right-0 h-1/2 w-1/6 cursor-col-resize flex-col' : ''}`
     const handleStyle = `${axis.includes('y') ? 'w-1/2 h-1 mb-1' : ''} ${axis.includes('x') ? 'h-1/2 w-1 mr-1' : ''}`
