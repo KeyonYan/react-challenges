@@ -1,5 +1,4 @@
 import React, { Children, DragEventHandler, HTMLAttributes, forwardRef, useRef, useState } from "react"
-import styles from './Draggable.module.css'
 import { cn } from "@/lib/utils"
 
 export interface DraggableAreaProps extends HTMLAttributes<HTMLDivElement> {
@@ -11,7 +10,7 @@ export const DraggableArea = forwardRef<HTMLDivElement, DraggableAreaProps>(
   ({className, children, ...props}, ref) => {
     return (
       <div
-        className={cn(className, 'relative', styles.draggableArea)}
+        className={cn(className, 'relative')}
       >
         {Children.map(children, (child) => {
           if (!React.isValidElement(child)) return
@@ -84,7 +83,6 @@ export const DraggableBox = forwardRef<HTMLDivElement, DraggableBoxProps>(
           top: posToArea.y,
           userSelect: 'none',
         }}
-        className={cn(styles.draggableBox)}
       >
         {children}
       </div>
