@@ -10,10 +10,10 @@ export type ViewSize = {
 
 export interface MutableViewProps extends HTMLAttributes<HTMLDivElement> {
   size: ViewSize
-  fixable?: BooleanConstructor
+  fixed?: boolean
 }
 export const MutableView = forwardRef<HTMLDivElement, MutableViewProps>(
-  ({className, children, size, fixable, ...props}, ref) => {
+  ({className, children, size, fixed, ...props}, ref) => {
     const rootRef = useRef<HTMLDivElement>(null)
     const [mutAreaSize, setMutAreaSize] = useState({ w: 0, h: 0})
     const controls = useDragControls()
@@ -45,7 +45,7 @@ export const MutableView = forwardRef<HTMLDivElement, MutableViewProps>(
         className='relative'
         style={{x: size.x, y: size.y, width: w, height: h}} 
         whileHover={{ scale: 1.1 }}
-        drag={!fixable}
+        drag={!fixed}
         dragConstraints={dragConstraints} 
         dragControls={controls}
         dragMomentum={false}
