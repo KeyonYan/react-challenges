@@ -64,7 +64,7 @@ export const MutableLayout = forwardRef<HTMLDivElement, MutableLayoutProps>(
         <motion.div layout className='relative w-[500px] h-[500px] bg-red-100'>
           {rects.map((rect, i) => {
             return (
-              <MutableView key={i} rect={rect} fixed={isFixed} onRectChange={(rect) => handleRectChange(i, rect)}>
+              <MutableView key={i} rect={rect} fixed={isFixed as boolean} onRectChange={(rect) => handleRectChange(i, rect)}>
                 <div className={`${ctx[i].color} w-full h-full align-middle rounded-lg shadow-sm flex justify-center items-center text-6xl`}>
                   {ctx[i].icon}
                 </div>
