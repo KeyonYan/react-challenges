@@ -1,5 +1,7 @@
 import { PanInfo, motion, useMotionValue, useSpring } from "framer-motion"
 import { HTMLAttributes, forwardRef, useEffect, useRef, useState } from "react"
+import {ClarityDragHandleCornerLine} from '@/app/icons/Icons'
+import { cn } from "@/lib/utils"
 
 export type Rect = {
   x: number,
@@ -29,9 +31,10 @@ export const MutableView = forwardRef<HTMLDivElement, MutableViewProps>(
     const h = useSpring(rect.h)
     const x = useMotionValue(rect.x)
     const y = useMotionValue(rect.y)
-    const resizerLen = 15
+    const resizerLen = 20
     const resizerX = useMotionValue(rect.x + rect.w - resizerLen)
     const resizerY = useMotionValue(rect.y + rect.h - resizerLen)
+    const resizerScale = useMotionValue(1)
     
     useEffect(() => {
       const rootElement = rootRef.current
@@ -84,14 +87,16 @@ export const MutableView = forwardRef<HTMLDivElement, MutableViewProps>(
       <>
         <motion.div
           ref={rootRef}
-          className='absolute cursor-move'
+          className={cn(className, 'absolute cursor-move')}
           style={{
             x,
             y,
             width: w,
             height: h,
-          }} 
-          whileHover={{ scale: 1.1 }}
+          }}
+          whileHover={{scale: 1.1}}
+          onHoverStart={() => resizerScale.set(1.3)}
+          onHoverEnd={() => resizerScale.set(1)}
           drag={!fixed}
           onDragStart={handleDragStart}
           onDrag={handleRectChange}
@@ -103,29 +108,32 @@ export const MutableView = forwardRef<HTMLDivElement, MutableViewProps>(
           {children}
         </motion.div>
         
-        {
-          !fixed && 
-          <motion.div
-          ref={resizerRef}
-            className='absolute w-[15px] h-[15px] rounded-md bg-[#6f6f6f] cursor-nwse-resize'
-            drag
-            style={{
-              x: resizerX,
-              y: resizerY,
-            }}
-            dragConstraints={{
-              left: 0,
-              top: 0,
-              right: mutAreaSize.w - resizerLen,
-              bottom: mutAreaSize.h - resizerLen,
-            }}
-            onDrag={(e, info) => handleResizer(e, info)}
-            onDragEnd={(e, info) => handleResizer(e, info)}
-            dragMomentum={false}
-            dragElastic={false}
-          >
-          </motion.div>
-        }
+        <motion.div
+        ref={resizerRef}
+          className={`${fixed ? 'hidden' : ''} absolute rounded-md cursor-nwse-resize`}
+          style={{
+            x: resizerX,
+            y: resizerY,
+            width: resizerLen,
+            height: resizerLen,
+            scale: resizerScale,
+          }}
+          drag
+          dragConstraints={{
+            left: rect.x,
+            top: rect.y,
+            right: mutAreaSize.w - resizerLen,
+            bottom: mutAreaSize.h - resizerLen,
+          }}
+          onDrag={(e, info) => handleResizer(e, info)}
+          whileDrag={{opacity: 0}}
+          whileHover={{ scale: 1.3, opacity: 100}}
+          onDragEnd={(e, info) => handleResizer(e, info)}
+          dragMomentum={false}
+          dragElastic={false}
+        >
+          <ClarityDragHandleCornerLine style={{width: resizerLen, height: resizerLen}} />
+        </motion.div>
       </>
     )
   }
