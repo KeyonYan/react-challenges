@@ -13,6 +13,8 @@ export type Size = {
   h: number
 }
 
+let maxZIndex = 1
+
 export interface MutableViewProps extends HTMLAttributes<HTMLDivElement> {
   rect: Rect
   fixed?: boolean
@@ -21,6 +23,7 @@ export interface MutableViewProps extends HTMLAttributes<HTMLDivElement> {
 export const MutableView = forwardRef<HTMLDivElement, MutableViewProps>(
   ({className, children, rect, onRectChange, fixed, ...props}, ref) => {
     const rootRef = useRef<HTMLDivElement>(null)
+    const resizerRef = useRef<HTMLDivElement>(null)
     const [mutAreaSize, setMutAreaSize] = useState({ w: 0, h: 0})
     const w = useSpring(rect.w)
     const h = useSpring(rect.h)
@@ -46,7 +49,13 @@ export const MutableView = forwardRef<HTMLDivElement, MutableViewProps>(
       resizerX.set(rect.x + rect.w - resizerLen)
       resizerY.set(rect.y + rect.h - resizerLen)
     }, [rect])
-
+    const handleDragStart = () => {
+      if (rootRef.current && resizerRef.current) {
+        rootRef.current.style.zIndex = String(maxZIndex)
+        resizerRef.current.style.zIndex = String(maxZIndex)
+        maxZIndex++
+      }
+    }
     const handleRectChange = () => {
       const newRect = {
         x: x.get(),
@@ -80,10 +89,11 @@ export const MutableView = forwardRef<HTMLDivElement, MutableViewProps>(
             x,
             y,
             width: w,
-            height: h
+            height: h,
           }} 
           whileHover={{ scale: 1.1 }}
           drag={!fixed}
+          onDragStart={handleDragStart}
           onDrag={handleRectChange}
           dragConstraints={dragConstraints}
           dragMomentum={false}
@@ -96,11 +106,12 @@ export const MutableView = forwardRef<HTMLDivElement, MutableViewProps>(
         {
           !fixed && 
           <motion.div
+          ref={resizerRef}
             className='absolute w-[15px] h-[15px] rounded-md bg-[#6f6f6f] cursor-nwse-resize'
             drag
             style={{
               x: resizerX,
-              y: resizerY
+              y: resizerY,
             }}
             dragConstraints={{
               left: 0,
