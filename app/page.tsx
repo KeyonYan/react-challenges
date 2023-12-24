@@ -31,6 +31,9 @@ export default function Home() {
         <Link href="/day8">
           <Card className='p-4'>Mutable View</Card>
         </Link>
+        <Link href="/day9">
+          <Card className='p-4'>Mutable Desktop</Card>
+        </Link>
       </div>
     </main>
   )
