@@ -1,25 +1,32 @@
-import { motion, useDragControls, useSpring } from "framer-motion"
+import { PanInfo, motion, useMotionValue, useSpring } from "framer-motion"
 import { HTMLAttributes, forwardRef, useEffect, useRef, useState } from "react"
 
-export type ViewSize = {
+export type Rect = {
   x: number,
   y: number,
   w: number,
   h: number,
 }
 
+export type Size = {
+  w: number,
+  h: number
+}
+
 export interface MutableViewProps extends HTMLAttributes<HTMLDivElement> {
-  size: ViewSize
+  rect: Rect
   fixed?: boolean
+  onRectChange: (rect: Rect) => void
 }
 export const MutableView = forwardRef<HTMLDivElement, MutableViewProps>(
-  ({className, children, size, fixed, ...props}, ref) => {
+  ({className, children, rect, onRectChange, fixed, ...props}, ref) => {
     const rootRef = useRef<HTMLDivElement>(null)
     const [mutAreaSize, setMutAreaSize] = useState({ w: 0, h: 0})
-    const controls = useDragControls()
-    const w = useSpring(size.w)
-    const h = useSpring(size.h)
-
+    const w = useSpring(rect.w)
+    const h = useSpring(rect.h)
+    const x = useMotionValue(rect.x)
+    const y = useMotionValue(rect.y)
+    
     useEffect(() => {
       const rootElement = rootRef.current
       const mutableArea = rootElement?.parentElement
@@ -29,29 +36,45 @@ export const MutableView = forwardRef<HTMLDivElement, MutableViewProps>(
     }, [children])
 
     useEffect(() => {
-      w.set(size.w)
-      h.set(size.h)
-    }, [size])
+      w.set(rect.w)
+      h.set(rect.h)
+      x.set(rect.x)
+      y.set(rect.y)
+    }, [rect])
+
+    const handleRectChange = () => {
+      const newRect = {
+        x: x.get(),
+        y: y.get(),
+        w: w.get(),
+        h: h.get()
+      }
+      onRectChange(newRect)
+    }
     
     const dragConstraints = {
       left: 0,
       top: 0,
-      right: mutAreaSize.w-size.w,
-      bottom: mutAreaSize.h-size.h,
+      right: mutAreaSize.w-rect.w,
+      bottom: mutAreaSize.h-rect.h,
     };
     return (
       <motion.div 
         ref={rootRef}
-        className='relative'
-        style={{x: size.x, y: size.y, width: w, height: h}} 
+        className='absolute'
+        style={{
+          x,
+          y,
+          width: w, 
+          height: h
+        }} 
         whileHover={{ scale: 1.1 }}
         drag={!fixed}
-        dragConstraints={dragConstraints} 
-        dragControls={controls}
+        onDrag={handleRectChange}
+        onTransitionEnd={handleRectChange}
+        dragConstraints={dragConstraints}
         dragMomentum={false}
-        touch-action
       >
-        
         {children}
       </motion.div>
     )

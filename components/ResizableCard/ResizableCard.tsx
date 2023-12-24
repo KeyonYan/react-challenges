@@ -12,7 +12,7 @@ export interface HandleProps extends HTMLAttributes<HTMLDivElement> {
   onChangeSize: Dispatch<SetStateAction<CardSize>>
 }
 
-const Handle = forwardRef<HTMLDivElement, HandleProps>(
+export const Handle = forwardRef<HTMLDivElement, HandleProps>(
   ({className, hover, axis, size, min, max, onChangeSize, ...props}, ref) => {
     const [mousePos, setMousePos] = useState<{x: number, y: number}>({x: 0, y: 0})
     const resizeBox: MouseEventHandler<HTMLDivElement> = (e) => {
