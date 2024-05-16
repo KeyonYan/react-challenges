@@ -31,6 +31,12 @@ export default function Home() {
         <Link href="/virtual-list">
           <Card className='p-4'>Virtual List</Card>
         </Link>
+        <Link href="/framer-motion/scroll-progress">
+          <Card className='p-4'>Scroll Progess</Card>
+        </Link>
+        <Link href="/framer-motion/scroll-display">
+          <Card className='p-4'>Scroll Display</Card>
+        </Link>
       </div>
     </main>
   )
