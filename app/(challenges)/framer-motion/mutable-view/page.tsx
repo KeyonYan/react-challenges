@@ -1,12 +1,12 @@
 'use client'
-import { MutableView, Rect } from "@/components/MutableView/MutableView"
+import { MutableView, Rect } from "@/components/MutableView"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { CheckedState } from "@radix-ui/react-checkbox"
 import { motion } from "framer-motion"
 import { useState } from "react"
 
-const Day8 = () => {
+export default function MutableViewPage() {
   const [rects, setRects] = useState<Rect[]>(
     [
       {x: 10, y: 10, w: 160, h: 160},
@@ -38,9 +38,7 @@ const Day8 = () => {
   }
   return (
     
-    <div className="p-4 flex flex-col gap-4">
-      <h1 className="text-xl font-bold">Day 8</h1>
-      <div className="text-2xl font-bold">Mutable View & Layout</div>
+    <div className="flex flex-col gap-4">
       <div className="flex items-center space-x-2">
         <Checkbox id="isfixed" checked={isFixed} onCheckedChange={setIsFixed}/>
         <label
@@ -69,5 +67,3 @@ const Day8 = () => {
     </div>
   )
 }
-
-export default Day8

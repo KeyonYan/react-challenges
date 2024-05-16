@@ -1,7 +1,7 @@
 'use client'
 import { useState, useRef } from "react"
 
-export default function Day3() {
+export default function TodoListPage() {
   const [items, setItems] = useState(['a', 'b'])
   const inputElement = useRef<HTMLInputElement>(null)
   const handleAdd = () => {
@@ -15,8 +15,7 @@ export default function Day3() {
     setItems(newItems)
   }
   return (
-    <div className="p-4 flex flex-col gap-4">
-      <h1 className="text-xl font-bold">Day 3</h1>
+    <>
       <div className="flex flex-row gap-2">
         <input ref={inputElement} placeholder="Add city" className="border-indigo-500 border-2 p-1 rounded-lg" />
         <button onClick={handleAdd} className="rounded-lg bg-slate-200 p-2">Add</button>
@@ -33,6 +32,6 @@ export default function Day3() {
           })}
         </div>
       </div>
-    </div>
+    </>
   )
 }

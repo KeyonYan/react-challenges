@@ -1,6 +1,6 @@
 import { useRef, useState, useEffect, forwardRef, HTMLAttributes } from "react"
 import { useDebounce } from "@uidotdev/usehooks";
-import styles from './ProgressBar.module.css'
+import styles from './index.module.css'
 import { cn } from "@/lib/utils"
 import { cva, type VariantProps } from "class-variance-authority"
 

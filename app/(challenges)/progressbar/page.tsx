@@ -1,11 +1,11 @@
 'use client'
 import { ChangeEventHandler, useState } from "react"
-import Progress from "@/components/ProgressBar/ProgressBar"
+import Progress from "@/components/ProgressBar"
 
 type Variant = "default" | "bright" | "dark" | null | undefined
 type Size = "default" | "sm" | "lg" | "xl" | null | undefined
 
-export default function Day4() {
+export default function ProgressBarPage() {
   const [value, setValue] = useState(50)
   const [variant, setVariant] = useState<Variant>('default')
   const [size, setSize] = useState<Size>('default')
@@ -22,9 +22,7 @@ export default function Day4() {
     setSize(val)
   }
   return (
-    <div className="p-4 flex flex-col gap-4">
-      <h1 className="text-xl font-bold">Day 4</h1>
-      <div className="text-2xl font-bold">Progress Bar</div>
+    <>
       <Progress value={value} max={100} size={size} variant={variant}/>
       <div className="flex flex-row gap-4 items-center">
         <div>Input Precentage: </div>
@@ -43,6 +41,6 @@ export default function Day4() {
           <option value="xl">xl</option>
         </select>
       </div>
-    </div>
+    </>
   )
 }
