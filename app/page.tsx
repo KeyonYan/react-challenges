@@ -37,6 +37,9 @@ export default function Home() {
         <Link href="/framer-motion/scroll-display">
           <Card className='p-4'>Scroll Display</Card>
         </Link>
+        <Link href="/app-layout">
+          <Card className='p-4'>App Layout</Card>
+        </Link>
       </div>
     </main>
   )
