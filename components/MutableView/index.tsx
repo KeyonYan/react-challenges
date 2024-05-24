@@ -51,7 +51,7 @@ export const MutableView = forwardRef<HTMLDivElement, MutableViewProps>(
       y.set(rect.y)
       resizerX.set(rect.x + rect.w - resizerLen)
       resizerY.set(rect.y + rect.h - resizerLen)
-    }, [rect])
+    }, [rect, resizerX, resizerY, w, x, y, h])
     const handleDragStart = () => {
       if (rootRef.current && resizerRef.current) {
         rootRef.current.style.zIndex = String(maxZIndex)

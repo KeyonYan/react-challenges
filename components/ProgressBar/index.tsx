@@ -76,7 +76,7 @@ export const ProgressValue = forwardRef<HTMLDivElement, ProgressValueProps>(
           setHidden(false)
         }
       }
-    }, [debouncedUpdateValue])
+    }, [debouncedUpdateValue, hidden])
     return (
       <div ref={innerProgressElement} {...props} style={{ width: `${value/max*100}%`}} className={`${styles.animateGradientBg} ${className}`}>
         <div className={`${hidden ? 'opacity-0' : 'opacity-100'} select-none leading-loose w-auto transition-opacity duration-1000 ease-in-out`} ref={valueElement}>{value}%</div>

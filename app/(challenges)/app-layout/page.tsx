@@ -64,6 +64,8 @@ export const DragShadow = forwardRef<HTMLDivElement, DragShadowProps>(
   }
 )
 
+DragShadow.displayName = 'DragShadow'
+
 interface CompProps extends MotionProps {
   width: number,
   height: number,

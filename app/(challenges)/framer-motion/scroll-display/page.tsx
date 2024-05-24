@@ -1,6 +1,7 @@
 'use client'
 
 import { motion, MotionValue, useMotionValueEvent, useScroll, useTransform } from "framer-motion"
+import Image from "next/image"
 import { useRef, useState } from "react"
 
 const bingImgUrl = 'https://bing.img.run/rand.php'
@@ -42,7 +43,7 @@ const ScrollItem = ({ itemStyle, className }: ScrollItem) => {
   const randomIndex = Math.random()
   return (
     <motion.div className={className} style={ itemStyle }>
-      <img src={`${bingImgUrl}?${randomIndex}`} alt={`${randomIndex}`}/>
+      <Image src={`${bingImgUrl}?${randomIndex}`} alt={`${randomIndex}`}/>
     </motion.div>
   )
 }

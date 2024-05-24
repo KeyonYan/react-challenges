@@ -15,4 +15,6 @@ export const AppLayout = forwardRef<HTMLDivElement, AppLayoutProps>(
   }
 )
 
+AppLayout.displayName = 'AppLayout'
+
 export default AppLayout

@@ -20,7 +20,7 @@ export default function ScrollViewPage() {
       <div className="fixed text-center w-full left-0 top-0 h-4">{progress.toFixed(2)}%</div>
       {data.map((item, index) => {
         return (
-          <p>{item}</p>
+          <p key={index}>{item}</p>
         )
       })}
     </>
