@@ -3,9 +3,9 @@
 import AppLayout from "@/components/AppLayout";
 import { cn } from "@/lib/utils";
 import { useMouse } from "@uidotdev/usehooks";
-import { DragControls, motion, MotionProps, useDragControls } from "framer-motion";
+import { motion, MotionProps } from "framer-motion";
 import { atom, useAtom } from "jotai";
-import { DragEventHandler, HTMLAttributes, MouseEventHandler, PointerEventHandler, useRef, useState } from "react";
+import { forwardRef, useRef, useState } from "react";
 
 const BASELEN = 50, GAP = 20
 
@@ -27,32 +27,42 @@ const comps = atom([
     col: 1,
     width: 1,
     height: 1,
+  },{
+    row: 1,
+    col: 0,
+    width: 2,
+    height: 1,
   },
+
 ])
 
 
-interface DragShadowProps {
+interface DragShadowProps extends MotionProps {
   row?: number,
   col?: number,
   width?: number,
   height?: number,
+  className?: string
 }
 
-export function DragShadow({row = 0, col = 0, width = 0, height = 0, ...props}: DragShadowProps) {
-  return (
-    <motion.div
-      style={{
-        top: BASELEN*row + (row+1)*GAP, 
-        left: BASELEN*col + (col+1)*GAP,
-        width: BASELEN*width+((width-1)*GAP),
-        height: BASELEN*height+((height-1)*GAP)
-      }}
-      className={`absolute bg-transparent rounded-lg border z-0`}
-      {...props}
-    >
-    </motion.div>
-  )
-}
+export const DragShadow = forwardRef<HTMLDivElement, DragShadowProps>(
+  ({row = 0, col = 0, width = 0, height = 0, className, ...props}, ref) => {
+    return (
+      <motion.div
+        ref={ref}
+        style={{
+          top: BASELEN*row + (row+1)*GAP, 
+          left: BASELEN*col + (col+1)*GAP,
+          width: BASELEN*width+((width-1)*GAP),
+          height: BASELEN*height+((height-1)*GAP)
+        }}
+        className={`absolute bg-transparent rounded-lg border z-0`}
+        {...props}
+      >
+      </motion.div>
+    )
+  }
+)
 
 interface CompProps extends MotionProps {
   width: number,
@@ -87,29 +97,33 @@ export default function AppLayoutPage() {
   const [shadow, setShadow] = useState<DragShadowProps>()
   const [compsValue, setCompsValue] = useAtom(comps)
   const [mouse, layoutRef] = useMouse<HTMLDivElement>()
+  const shadowRef = useRef<HTMLDivElement>(null)
   const [isDrag, setIsDrag] = useState(false)
   function handleDrag(e: DragEvent, item: CompProps) {
     const n = Math.floor((mouse.elementY - GAP) / (BASELEN + GAP))
     const m = Math.floor((mouse.elementX - GAP) / (BASELEN + GAP))
     setShadow({row: n, col: m, width: item.width, height: item.height})
   }
+  function handleDragEnd(e: DragEvent) {
+    setIsDrag(false)
+  }
   return (
     <AppLayout ref={layoutRef} className="relative w-[800px] h-[800px] m-10 border">
+      <DragShadow ref={shadowRef} {...shadow} />
       {compsValue.map((item, index) => {
         return (
           <Comp
             {...item}
             key={index}
             onDragStart={() => setIsDrag(true)}
-            onDrag={(e) => handleDrag(e, item)}
-            onDragEnd={() => setIsDrag(false)}
-            dragConstraints={layoutRef}
+            onDrag={(e) => handleDrag(e as DragEvent, item)}
+            onDragEnd={handleDragEnd}
+            dragConstraints={shadowRef}
           >
             *
           </Comp>
         )
       })}
-      {isDrag && <DragShadow {...shadow} />}
     </AppLayout>
   )
 }
