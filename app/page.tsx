@@ -1,5 +1,5 @@
 'use client'
-import Link from 'next/link' 
+import Link from 'next/link'
 import { Card } from '@/components/Card'
 
 export default function Home() {
@@ -39,6 +39,9 @@ export default function Home() {
         </Link>
         <Link href="/app-layout">
           <Card className='p-4'>App Layout</Card>
+        </Link>
+        <Link href="/xyflow">
+          <Card className='p-4'>React Flow</Card>
         </Link>
       </div>
     </main>
