@@ -43,6 +43,9 @@ export default function Home() {
         <Link href="/xyflow">
           <Card className='p-4'>React Flow</Card>
         </Link>
+        <Link href="/gridstack">
+          <Card className='p-4'>Grid Stack</Card>
+        </Link>
       </div>
     </main>
   )
