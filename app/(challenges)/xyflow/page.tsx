@@ -1,6 +1,6 @@
 'use client'
 import Dagre from '@dagrejs/dagre';
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect, useLayoutEffect, useMemo } from 'react';
 import {
   ReactFlow,
   ReactFlowProvider,
@@ -8,11 +8,20 @@ import {
   useNodesState,
   useEdgesState,
   useReactFlow,
+  Background,
+  BackgroundVariant,
+  Controls,
+  ControlButton,
 } from '@xyflow/react';
 
 import { initialNodes, initialEdges } from './nodes-edges';
 import '@xyflow/react/dist/style.css';
 import { Button } from '@/components/ui/button';
+import { MagicWandIcon } from '@radix-ui/react-icons';
+import TextNode from './TextNode';
+import OptionNode from './OptionNode';
+import StartNode from './StartNode';
+import EndNode from './EndNode';
 
 const getLayoutedElements = (nodes, edges, options) => {
   const g = new Dagre.graphlib.Graph().setDefaultEdgeLabel(() => ({}));
@@ -47,7 +56,12 @@ const LayoutFlow = () => {
   const { fitView } = useReactFlow();
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
-
+  const nodeTypes = useMemo(() => ({
+    startNode: StartNode,
+    endNode: EndNode,
+    textNode: TextNode,
+    optionNode: OptionNode
+  }), [])
   const onLayout = useCallback(
     (direction) => {
       console.log(nodes);
@@ -57,7 +71,7 @@ const LayoutFlow = () => {
       setEdges([...layouted.edges]);
 
       window.requestAnimationFrame(() => {
-        fitView();
+        fitView({ duration: 1000 });
       });
     },
     [nodes, edges],
@@ -70,7 +84,9 @@ const LayoutFlow = () => {
       onNodesChange={onNodesChange}
       onEdgesChange={onEdgesChange}
       fitView
+      nodeTypes={nodeTypes}
     >
+      <Background bgColor='#F0F2F6' color='#E4E5E7' variant={BackgroundVariant.Dots} size={3} />
       <Panel position="top-left" className='flex flex-col gap-2'>
         <Button onClick={() => onLayout('TB')}>vertical layout</Button>
         <Button onClick={() => onLayout('LR')}>horizontal layout</Button>
