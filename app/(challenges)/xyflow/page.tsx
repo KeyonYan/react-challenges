@@ -1,6 +1,6 @@
 'use client'
 import Dagre from '@dagrejs/dagre';
-import React, { useCallback, useEffect, useLayoutEffect, useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import {
   ReactFlow,
   ReactFlowProvider,
@@ -10,25 +10,22 @@ import {
   useReactFlow,
   Background,
   BackgroundVariant,
-  Controls,
-  ControlButton,
 } from '@xyflow/react';
 
 import { initialNodes, initialEdges } from './nodes-edges';
 import '@xyflow/react/dist/style.css';
 import { Button } from '@/components/ui/button';
-import { MagicWandIcon } from '@radix-ui/react-icons';
 import TextNode from './TextNode';
 import OptionNode from './OptionNode';
 import StartNode from './StartNode';
 import EndNode from './EndNode';
 
-const getLayoutedElements = (nodes, edges, options) => {
+const getLayoutedElements = (nodes: any, edges: any, options: any) => {
   const g = new Dagre.graphlib.Graph().setDefaultEdgeLabel(() => ({}));
   g.setGraph({ rankdir: options.direction });
 
-  edges.forEach((edge) => g.setEdge(edge.source, edge.target));
-  nodes.forEach((node) =>
+  edges.forEach((edge: any) => g.setEdge(edge.source, edge.target));
+  nodes.forEach((node: any) =>
     g.setNode(node.id, {
       ...node,
       width: node.measured?.width ?? 0,
@@ -39,7 +36,7 @@ const getLayoutedElements = (nodes, edges, options) => {
   Dagre.layout(g);
 
   return {
-    nodes: nodes.map((node) => {
+    nodes: nodes.map((node: any) => {
       const position = g.node(node.id);
       // We are shifting the dagre node position (anchor=center center) to the top left
       // so it matches the React Flow node anchor point (top left).
@@ -63,7 +60,7 @@ const LayoutFlow = () => {
     optionNode: OptionNode
   }), [])
   const onLayout = useCallback(
-    (direction) => {
+    (direction: any) => {
       console.log(nodes);
       const layouted = getLayoutedElements(nodes, edges, { direction });
 
@@ -74,7 +71,7 @@ const LayoutFlow = () => {
         fitView({ duration: 1000 });
       });
     },
-    [nodes, edges],
+    [nodes, edges, setNodes, setEdges, fitView],
   );
 
   return (
