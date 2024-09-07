@@ -18,7 +18,7 @@ import { edgesAtom, getLayoutedElements, nodesAtom } from './nodes-edges';
 import { useAtom } from 'jotai';
 
 const LayoutFlow = () => {
-  const { fitView } = useReactFlow();
+  const { getNodes, fitView } = useReactFlow();
   const [nodes, setNodes] = useAtom(nodesAtom);
   const [edges, setEdges] = useAtom(edgesAtom);
   const nodeTypes = useMemo(() => ({
@@ -26,7 +26,13 @@ const LayoutFlow = () => {
     childNode: ChildNode,
   }), [])
   const handleNodeClick = useCallback<NodeMouseHandler>(
-    (_, node) => {
+    (e, node) => {
+      console.log("e", e)
+      const isSvg = e.target instanceof SVGElement;
+      if (isSvg) {
+        console.log("isSvg", isSvg)
+        return
+      }
       fitView({ nodes: [node], duration: 800 })
     },
     [fitView]
@@ -39,6 +45,9 @@ const LayoutFlow = () => {
       onNodesChange={(changes) => {
         console.log("changes", changes)
         setNodes(applyNodeChanges(changes, nodes))
+        setTimeout(() => {
+          fitView({ nodes: nodes, duration: 800 })
+        }, 50)
       }}
       onEdgesChange={(changes) => {
         setEdges(applyEdgeChanges(changes, edges))

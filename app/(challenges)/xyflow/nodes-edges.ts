@@ -11,7 +11,10 @@ import {
 import { atom, useAtom } from "jotai";
 import dagre from "@dagrejs/dagre";
 
-export type CustomNodeType = Node<{ title: string }, "childNode" | "rootNode">;
+export type CustomNodeType = Node<
+  { title: string; collapsed: boolean },
+  "childNode" | "rootNode"
+>;
 
 const position = { x: 0, y: 0 };
 
@@ -62,44 +65,51 @@ const initialNodes: CustomNodeType[] = [
   {
     id: "1",
     type: "rootNode",
-    data: { title: "背景" },
+    data: { title: "背景", collapsed: false },
     position,
+    hidden: false,
   },
   {
     id: "2",
     type: "childNode",
-    data: { title: "角色" },
+    data: { title: "角色", collapsed: false },
     position,
+    hidden: false,
   },
   {
     id: "2a",
     type: "childNode",
-    data: { title: "角色1" },
+    data: { title: "角色1", collapsed: false },
     position,
+    hidden: false,
   },
   {
     id: "2b",
     type: "childNode",
-    data: { title: "node 2b" },
+    data: { title: "node 2b", collapsed: false },
     position,
+    hidden: false,
   },
   {
     id: "2c",
     type: "childNode",
-    data: { title: "node 2c" },
+    data: { title: "node 2c", collapsed: false },
     position,
+    hidden: false,
   },
   {
     id: "2d",
     type: "childNode",
-    data: { title: "node 2d" },
+    data: { title: "node 2d", collapsed: false },
     position,
+    hidden: false,
   },
   {
     id: "3",
     type: "childNode",
-    data: { title: "node 3" },
+    data: { title: "node 3", collapsed: false },
     position,
+    hidden: false,
   },
 ];
 
