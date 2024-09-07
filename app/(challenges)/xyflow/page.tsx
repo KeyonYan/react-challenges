@@ -1,67 +1,25 @@
 'use client'
-import React, { useCallback, useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import {
   ReactFlow,
   ReactFlowProvider,
-  Panel,
   useReactFlow,
   Background,
   BackgroundVariant,
-  type NodeProps,
+  applyNodeChanges,
+  applyEdgeChanges,
 } from '@xyflow/react';
 
 import '@xyflow/react/dist/style.css';
 import ChildNode from './ChildNode';
 import RootNode from './RootNode';
-import dagre from "@dagrejs/dagre";
-import { useNodesEdges } from './nodes-edges';
-import type { CustomNodeType, CustomEdgeType } from './nodes-edges';
-import { Button } from '@/components/ui/button';
-
-const nodeWidth = 80;
-const nodeHeight = 36;
-const dagreGraph = new dagre.graphlib.Graph();
-dagreGraph.setDefaultEdgeLabel(() => ({}));
-
-export const getLayoutedElements = (nodes: CustomNodeType[], edges: CustomEdgeType[], direction = "TB") => {
-  const isHorizontal = direction === "LR";
-  dagreGraph.setGraph({ rankdir: direction });
-
-  console.log('nodes', nodes)
-  for (const node of nodes) {
-    const { width, height } = node.measured ?? { width: nodeWidth, height: nodeHeight };
-    dagreGraph.setNode(node.id, { width, height });
-  }
-
-  for (const edge of edges) {
-    dagreGraph.setEdge(edge.source, edge.target);
-  }
-
-  dagre.layout(dagreGraph);
-
-  const newNodes = nodes.map((node) => {
-    const nodeWithPosition = dagreGraph.node(node.id);
-    const newNode = {
-      ...node,
-      targetPosition: isHorizontal ? "left" : "top",
-      sourcePosition: isHorizontal ? "right" : "bottom",
-      // We are shifting the dagre node position (anchor=center center) to the top left
-      // so it matches the React Flow node anchor point (top left).
-      position: {
-        x: nodeWithPosition.x - nodeWidth / 2,
-        y: nodeWithPosition.y - nodeHeight / 2,
-      },
-    };
-
-    return newNode;
-  });
-  return { nodes: newNodes, edges };
-};
+import { edgesAtom, getLayoutedElements, nodesAtom } from './nodes-edges';
+import { useAtom } from 'jotai';
 
 const LayoutFlow = () => {
   const { fitView } = useReactFlow();
-  const { nodes, edges, setNodes, setEdges, onNodesChange, onEdgesChange } = useNodesEdges();
-  const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(nodes, edges, 'TB');
+  const [nodes, setNodes] = useAtom(nodesAtom);
+  const [edges, setEdges] = useAtom(edgesAtom);
   const nodeTypes = useMemo(() => ({
     rootNode: RootNode,
     childNode: ChildNode,
@@ -69,10 +27,15 @@ const LayoutFlow = () => {
 
   return (
     <ReactFlow
-      nodes={layoutedNodes}
-      edges={layoutedEdges}
-      // onNodesChange={onNodesChange}
-      // onEdgesChange={onEdgesChange}
+      nodes={nodes}
+      edges={edges}
+      onNodesChange={(changes) => {
+        console.log("changes", changes)
+        setNodes(applyNodeChanges(changes, nodes))
+      }}
+      onEdgesChange={(changes) => {
+        setEdges(applyEdgeChanges(changes, edges))
+      }}
       fitView
       nodeTypes={nodeTypes}
     >

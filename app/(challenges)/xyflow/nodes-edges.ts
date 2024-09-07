@@ -6,50 +6,59 @@ import {
   type EdgeChange,
   type NodeChange,
   type Node,
+  type Edge,
 } from "@xyflow/react";
 import { atom, useAtom } from "jotai";
+import dagre from "@dagrejs/dagre";
 
 export type CustomNodeType = Node<{ title: string }, "childNode" | "rootNode">;
 
 const position = { x: 0, y: 0 };
 
-export function useNodesEdges() {
-  const [nodes, setNodes] = useAtom(initialNodesAtom);
-  const [edges, setEdges] = useAtom(initialEdgesAtom);
+const nodeWidth = 80;
+const nodeHeight = 36;
+const dagreGraph = new dagre.graphlib.Graph();
+dagreGraph.setDefaultEdgeLabel(() => ({}));
 
-  const onNodesChange = (changes: NodeChange<CustomNodeType>[]) => {
-    console.log("changes: ", changes);
-    setNodes(applyNodeChanges(changes, nodes));
-  };
+export const getLayoutedElements = (
+  nodes: Node[],
+  edges: Edge[],
+  direction = "TB"
+) => {
+  const isHorizontal = direction === "LR";
+  dagreGraph.setGraph({ rankdir: direction });
 
-  const onEdgesChange = (changes: EdgeChange<CustomEdgeType>[]) => {
-    setEdges(applyEdgeChanges(changes, edges));
-  };
+  for (const node of nodes) {
+    const { width, height } = { width: nodeWidth, height: nodeHeight };
+    dagreGraph.setNode(node.id, { width, height });
+  }
 
-  const onConnect = (connection: Connection) => {
-    setEdges(addEdge(connection, edges));
-  };
+  for (const edge of edges) {
+    dagreGraph.setEdge(edge.source, edge.target);
+  }
 
-  const setNodesAction = (nodes: CustomNodeType[]) => {
-    setNodes(nodes);
-  };
+  dagre.layout(dagreGraph);
 
-  const setEdgesAction = (edges: CustomEdgeType[]) => {
-    setEdges(edges);
-  };
+  const newNodes = nodes.map((node) => {
+    const nodeWithPosition = dagreGraph.node(node.id);
+    const newNode = {
+      ...node,
+      targetPosition: isHorizontal ? "left" : "top",
+      sourcePosition: isHorizontal ? "right" : "bottom",
+      // We are shifting the dagre node position (anchor=center center) to the top left
+      // so it matches the React Flow node anchor point (top left).
+      position: {
+        x: nodeWithPosition.x - nodeWidth / 2,
+        y: nodeWithPosition.y - nodeHeight / 2,
+      },
+    };
 
-  return {
-    nodes,
-    edges,
-    onNodesChange,
-    onEdgesChange,
-    onConnect,
-    setNodes: setNodesAction,
-    setEdges: setEdgesAction,
-  };
-}
+    return newNode;
+  });
+  return { nodes: newNodes as CustomNodeType[], edges };
+};
 
-export const initialNodesAtom = atom<CustomNodeType[]>([
+const initialNodes: CustomNodeType[] = [
   {
     id: "1",
     type: "rootNode",
@@ -92,18 +101,9 @@ export const initialNodesAtom = atom<CustomNodeType[]>([
     data: { title: "node 3" },
     position,
   },
-]);
+];
 
-export interface CustomEdgeType {
-  id: string;
-  source: string;
-  target: string;
-  sourceHandle: string;
-  targetHandle: string;
-  animated: boolean;
-}
-
-export const initialEdgesAtom = atom<CustomEdgeType[]>([
+const initialEdges: Edge[] = [
   {
     id: "e12",
     source: "1",
@@ -152,4 +152,13 @@ export const initialEdgesAtom = atom<CustomEdgeType[]>([
     targetHandle: "input",
     animated: true,
   },
-]);
+];
+
+const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(
+  initialNodes,
+  initialEdges,
+  "TB"
+);
+
+export const nodesAtom = atom(layoutedNodes);
+export const edgesAtom = atom(layoutedEdges);

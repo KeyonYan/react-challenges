@@ -1,12 +1,10 @@
 import { OptionIcon } from "../icons/OptionIcon";
-import { Handle, type NodeProps, Position } from "@xyflow/react";
+import { type Edge, Handle, type NodeProps, Position, useReactFlow } from "@xyflow/react";
 import { PlusIcon } from "lucide-react";
 import styles from './index.module.css';
-import { useNodesEdges } from "../nodes-edges";
-import type { CustomEdgeType, CustomNodeType } from "../nodes-edges";
-import { Button } from "@/components/ui/button";
-import { getLayoutedElements } from "../page";
-import { useEffect } from "react";
+import type { CustomNodeType } from "../nodes-edges";
+import { edgesAtom, getLayoutedElements, nodesAtom } from "../nodes-edges";
+import { useAtom } from "jotai";
 
 interface BaseNodeProps extends NodeProps<CustomNodeType> {
   children?: React.ReactNode
@@ -14,8 +12,7 @@ interface BaseNodeProps extends NodeProps<CustomNodeType> {
 
 export const BaseNode = ((props: BaseNodeProps) => {
   const { id, data, positionAbsoluteX, positionAbsoluteY, children } = props;
-  console.log('props: ', props);
-  const { nodes, edges, setNodes, setEdges } = useNodesEdges();
+  const { getNodes, getEdges, setNodes, setEdges } = useReactFlow();
   const addNode = () => {
     const newNode: CustomNodeType = {
       id: new Date().getTime().toString(),
@@ -36,14 +33,14 @@ export const BaseNode = ((props: BaseNodeProps) => {
       targetHandle: 'input',
       animated: true,
     }
-    const layouted = getLayoutedElements([...nodes, newNode], [...edges, newEdge], 'TB');
 
-    setNodes(layouted.nodes as CustomNodeType[]);
-    setEdges(layouted.edges as CustomEdgeType[]);
+    const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements([...getNodes(), newNode], [...getEdges(), newEdge], 'TB');
+    setNodes(layoutedNodes);
+    setEdges(layoutedEdges);
   };
 
   return (
-    <div className="flex flex-col gap-2 text-node rounded-lg p-4 shadow-sm focus:outline-none focus:ring focus-ring-violet-300 hover:shadow-lg hover:bg-[#FBFBFC] bg-[#FBFBFC]">
+    <div className="custom-node flex flex-col gap-2 text-node rounded-lg p-4 shadow-sm focus:outline-none focus:ring focus-ring-violet-300 hover:shadow-lg hover:bg-[#FBFBFC] bg-[#FBFBFC]">
       <div className="flex items-center gap-2">
         <OptionIcon className="w-4 h-4" />
         <div>{data.title}</div>
