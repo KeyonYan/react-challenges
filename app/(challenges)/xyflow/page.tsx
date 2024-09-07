@@ -9,6 +9,7 @@ import {
   applyNodeChanges,
   applyEdgeChanges,
   type NodeMouseHandler,
+  Controls,
 } from '@xyflow/react';
 
 import '@xyflow/react/dist/style.css';
@@ -35,18 +36,11 @@ const LayoutFlow = () => {
     },
     [fitView]
   )
-  const handleNodesDelete = useCallback(
-    (nodes) => {
-      console.log('delete after', nodes)
-    },
-    []
-  )
   return (
     <ReactFlow
       nodes={nodes}
       edges={edges}
       onNodeClick={handleNodeClick}
-      onNodesDelete={handleNodesDelete}
       onNodesChange={(changes) => {
         setNodes(applyNodeChanges(changes, nodes))
         setTimeout(() => {
@@ -64,7 +58,6 @@ const LayoutFlow = () => {
       nodeTypes={nodeTypes}
     >
       <Background bgColor='#F0F2F6' color='#E4E5E7' variant={BackgroundVariant.Dots} size={3} />
-
     </ReactFlow>
   );
 };
