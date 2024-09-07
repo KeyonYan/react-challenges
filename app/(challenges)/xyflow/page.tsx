@@ -1,5 +1,5 @@
 'use client'
-import React, { useCallback, useEffect, useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import {
   ReactFlow,
   ReactFlowProvider,
@@ -8,17 +8,17 @@ import {
   BackgroundVariant,
   applyNodeChanges,
   applyEdgeChanges,
-  NodeMouseHandler,
+  type NodeMouseHandler,
 } from '@xyflow/react';
 
 import '@xyflow/react/dist/style.css';
 import ChildNode from './ChildNode';
 import RootNode from './RootNode';
-import { edgesAtom, getLayoutedElements, nodesAtom } from './nodes-edges';
+import { edgesAtom, nodesAtom } from './nodes-edges';
 import { useAtom } from 'jotai';
 
 const LayoutFlow = () => {
-  const { getNodes, fitView } = useReactFlow();
+  const { fitView } = useReactFlow();
   const [nodes, setNodes] = useAtom(nodesAtom);
   const [edges, setEdges] = useAtom(edgesAtom);
   const nodeTypes = useMemo(() => ({
@@ -27,23 +27,27 @@ const LayoutFlow = () => {
   }), [])
   const handleNodeClick = useCallback<NodeMouseHandler>(
     (e, node) => {
-      console.log("e", e)
       const isSvg = e.target instanceof SVGElement;
       if (isSvg) {
-        console.log("isSvg", isSvg)
         return
       }
       fitView({ nodes: [node], duration: 800 })
     },
     [fitView]
   )
+  const handleNodesDelete = useCallback(
+    (nodes) => {
+      console.log('delete after', nodes)
+    },
+    []
+  )
   return (
     <ReactFlow
       nodes={nodes}
       edges={edges}
       onNodeClick={handleNodeClick}
+      onNodesDelete={handleNodesDelete}
       onNodesChange={(changes) => {
-        console.log("changes", changes)
         setNodes(applyNodeChanges(changes, nodes))
         setTimeout(() => {
           fitView({ nodes: nodes, duration: 800 })

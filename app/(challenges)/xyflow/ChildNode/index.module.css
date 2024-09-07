@@ -1,0 +1,9 @@
+.handle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+  border-radius: 9999px;
+  background-color: #ff4949;
+}
