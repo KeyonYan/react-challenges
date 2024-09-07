@@ -3,7 +3,7 @@ import { Handle, Position } from "@xyflow/react";
 import { useCallback } from "react";
 import BaseNode from "./BaseNode";
 
-function StartNode({ data, isConnectable }) {
+function StartNode({ data }) {
   const onChange = useCallback((evt) => {
     console.log(evt.target.value);
   }, []);
@@ -13,8 +13,8 @@ function StartNode({ data, isConnectable }) {
       <Handle
         type="source"
         position={Position.Bottom}
+        isConnectable={false}
         id="output"
-        isConnectable={isConnectable}
       />
     </BaseNode>
   );

@@ -6,7 +6,7 @@ import BaseNode from "../BaseNode";
 import styles from './index.module.css';
 import { PlusCircleIcon, PlusIcon } from "lucide-react";
 
-function EndNode({ data, isConnectable }) {
+function EndNode({ data }) {
   const onChange = useCallback((evt) => {
     console.log(evt.target.value);
   }, []);
@@ -17,14 +17,13 @@ function EndNode({ data, isConnectable }) {
         type="target"
         position={Position.Top}
         id="input"
-        isConnectable={isConnectable}
+        isConnectable={false}
       />
       <Handle
         type="source"
         className={styles.handle}
         position={Position.Bottom}
         id="output"
-        isConnectable={isConnectable}
       >
         <PlusIcon className="w-4 h-4 text-white" />
       </Handle>
