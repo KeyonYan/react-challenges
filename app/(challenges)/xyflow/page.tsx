@@ -1,41 +1,41 @@
 'use client'
-import dagre from '@dagrejs/dagre';
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import {
   ReactFlow,
   ReactFlowProvider,
   Panel,
-  useNodesState,
-  useEdgesState,
   useReactFlow,
   Background,
   BackgroundVariant,
+  type NodeProps,
 } from '@xyflow/react';
 
-import { initialNodes, initialEdges } from './nodes-edges';
 import '@xyflow/react/dist/style.css';
+import ChildNode from './ChildNode';
+import RootNode from './RootNode';
+import dagre from "@dagrejs/dagre";
+import { useNodesEdges } from './nodes-edges';
+import type { CustomNodeType, CustomEdgeType } from './nodes-edges';
 import { Button } from '@/components/ui/button';
-import TextNode from './TextNode';
-import OptionNode from './OptionNode';
-import StartNode from './StartNode';
-import EndNode from './EndNode';
 
 const nodeWidth = 80;
 const nodeHeight = 36;
 const dagreGraph = new dagre.graphlib.Graph();
 dagreGraph.setDefaultEdgeLabel(() => ({}));
 
-const getLayoutedElements = (nodes, edges, direction = 'TB') => {
-  const isHorizontal = direction === 'LR';
+export const getLayoutedElements = (nodes: CustomNodeType[], edges: CustomEdgeType[], direction = "TB") => {
+  const isHorizontal = direction === "LR";
   dagreGraph.setGraph({ rankdir: direction });
 
-  nodes.forEach((node) => {
-    dagreGraph.setNode(node.id, { width: nodeWidth, height: nodeHeight });
-  });
+  console.log('nodes', nodes)
+  for (const node of nodes) {
+    const { width, height } = node.measured ?? { width: nodeWidth, height: nodeHeight };
+    dagreGraph.setNode(node.id, { width, height });
+  }
 
-  edges.forEach((edge) => {
+  for (const edge of edges) {
     dagreGraph.setEdge(edge.source, edge.target);
-  });
+  }
 
   dagre.layout(dagreGraph);
 
@@ -43,8 +43,8 @@ const getLayoutedElements = (nodes, edges, direction = 'TB') => {
     const nodeWithPosition = dagreGraph.node(node.id);
     const newNode = {
       ...node,
-      targetPosition: isHorizontal ? 'left' : 'top',
-      sourcePosition: isHorizontal ? 'right' : 'bottom',
+      targetPosition: isHorizontal ? "left" : "top",
+      sourcePosition: isHorizontal ? "right" : "bottom",
       // We are shifting the dagre node position (anchor=center center) to the top left
       // so it matches the React Flow node anchor point (top left).
       position: {
@@ -55,34 +55,35 @@ const getLayoutedElements = (nodes, edges, direction = 'TB') => {
 
     return newNode;
   });
-
   return { nodes: newNodes, edges };
 };
 
 const LayoutFlow = () => {
-  const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(
-    initialNodes,
-    initialEdges,
-  );
   const { fitView } = useReactFlow();
-  const [nodes, setNodes, onNodesChange] = useNodesState(layoutedNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(layoutedEdges);
+  const { nodes, edges, setNodes, setEdges, onNodesChange, onEdgesChange } = useNodesEdges();
+  // const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(nodes, edges, 'TB');
   const nodeTypes = useMemo(() => ({
-    startNode: StartNode,
-    endNode: EndNode,
-    textNode: TextNode,
-    optionNode: OptionNode
+    rootNode: RootNode,
+    childNode: ChildNode,
   }), [])
-  const onLayout = useCallback(
-    (direction) => {
-      const { nodes: layoutedNodes, edges: layoutedEdges } =
-        getLayoutedElements(nodes, edges, direction);
 
-      setNodes([...layoutedNodes]);
-      setEdges([...layoutedEdges]);
+  const onLayout = useCallback(
+    (direction: string) => {
+      const layouted = getLayoutedElements(nodes, edges, direction);
+
+      setNodes([...layouted.nodes] as CustomNodeType[]);
+      setEdges([...layouted.edges] as CustomEdgeType[]);
+
+      window.requestAnimationFrame(() => {
+        fitView();
+      });
     },
-    [nodes, edges],
+    [nodes, edges, setNodes, setEdges, fitView]
   );
+
+  window.requestAnimationFrame(() => {
+    fitView();
+  });
 
   return (
     <ReactFlow

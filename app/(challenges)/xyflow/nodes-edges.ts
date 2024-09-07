@@ -1,50 +1,109 @@
+import {
+  addEdge,
+  applyEdgeChanges,
+  applyNodeChanges,
+  type Connection,
+  type EdgeChange,
+  type NodeChange,
+  type Node,
+} from "@xyflow/react";
+import { atom, useAtom } from "jotai";
+
+export type CustomNodeType = Node<{ title: string }, "childNode" | "rootNode">;
+
 const position = { x: 0, y: 0 };
 
-export const initialNodes = [
+export function useNodesEdges() {
+  const [nodes, setNodes] = useAtom(initialNodesAtom);
+  const [edges, setEdges] = useAtom(initialEdgesAtom);
+
+  const onNodesChange = (changes: NodeChange<CustomNodeType>[]) => {
+    console.log("changes: ", changes);
+    setNodes(applyNodeChanges(changes, nodes));
+  };
+
+  const onEdgesChange = (changes: EdgeChange<CustomEdgeType>[]) => {
+    setEdges(applyEdgeChanges(changes, edges));
+  };
+
+  const onConnect = (connection: Connection) => {
+    setEdges(addEdge(connection, edges));
+  };
+
+  const setNodesAction = (nodes: CustomNodeType[]) => {
+    setNodes(nodes);
+  };
+
+  const setEdgesAction = (edges: CustomEdgeType[]) => {
+    setEdges(edges);
+  };
+
+  return {
+    nodes,
+    edges,
+    onNodesChange,
+    onEdgesChange,
+    onConnect,
+    setNodes: setNodesAction,
+    setEdges: setEdgesAction,
+  };
+}
+
+export const initialNodesAtom = atom<CustomNodeType[]>([
   {
     id: "1",
-    type: "startNode",
+    type: "rootNode",
     data: { title: "背景" },
     position,
   },
   {
     id: "2",
-    type: "optionNode",
+    type: "childNode",
     data: { title: "角色" },
     position,
   },
   {
     id: "2a",
-    type: "textNode",
+    type: "childNode",
     data: { title: "角色1" },
     position,
   },
   {
     id: "2b",
-    type: "textNode",
+    type: "childNode",
     data: { title: "node 2b" },
     position,
   },
   {
     id: "2c",
-    type: "optionNode",
+    type: "childNode",
     data: { title: "node 2c" },
     position,
   },
   {
     id: "2d",
-    type: "endNode",
+    type: "childNode",
     data: { title: "node 2d" },
     position,
   },
   {
     id: "3",
-    type: "textNode",
+    type: "childNode",
     data: { title: "node 3" },
     position,
   },
-];
-export const initialEdges = [
+]);
+
+export interface CustomEdgeType {
+  id: string;
+  source: string;
+  target: string;
+  sourceHandle: string;
+  targetHandle: string;
+  animated: boolean;
+}
+
+export const initialEdgesAtom = atom<CustomEdgeType[]>([
   {
     id: "e12",
     source: "1",
@@ -93,4 +152,4 @@ export const initialEdges = [
     targetHandle: "input",
     animated: true,
   },
-];
+]);
