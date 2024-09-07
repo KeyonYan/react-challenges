@@ -1,5 +1,5 @@
 'use client'
-import React, { useEffect, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import {
   ReactFlow,
   ReactFlowProvider,
@@ -8,6 +8,7 @@ import {
   BackgroundVariant,
   applyNodeChanges,
   applyEdgeChanges,
+  NodeMouseHandler,
 } from '@xyflow/react';
 
 import '@xyflow/react/dist/style.css';
@@ -24,11 +25,17 @@ const LayoutFlow = () => {
     rootNode: RootNode,
     childNode: ChildNode,
   }), [])
-
+  const handleNodeClick = useCallback<NodeMouseHandler>(
+    (_, node) => {
+      fitView({ nodes: [node], duration: 800 })
+    },
+    [fitView]
+  )
   return (
     <ReactFlow
       nodes={nodes}
       edges={edges}
+      onNodeClick={handleNodeClick}
       onNodesChange={(changes) => {
         console.log("changes", changes)
         setNodes(applyNodeChanges(changes, nodes))
@@ -37,6 +44,10 @@ const LayoutFlow = () => {
         setEdges(applyEdgeChanges(changes, edges))
       }}
       fitView
+      fitViewOptions={{
+        duration: 1000,
+        nodes: nodes,
+      }}
       nodeTypes={nodeTypes}
     >
       <Background bgColor='#F0F2F6' color='#E4E5E7' variant={BackgroundVariant.Dots} size={3} />
