@@ -61,44 +61,23 @@ export const getLayoutedElements = (nodes: CustomNodeType[], edges: CustomEdgeTy
 const LayoutFlow = () => {
   const { fitView } = useReactFlow();
   const { nodes, edges, setNodes, setEdges, onNodesChange, onEdgesChange } = useNodesEdges();
-  // const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(nodes, edges, 'TB');
+  const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(nodes, edges, 'TB');
   const nodeTypes = useMemo(() => ({
     rootNode: RootNode,
     childNode: ChildNode,
   }), [])
 
-  const onLayout = useCallback(
-    (direction: string) => {
-      const layouted = getLayoutedElements(nodes, edges, direction);
-
-      setNodes([...layouted.nodes] as CustomNodeType[]);
-      setEdges([...layouted.edges] as CustomEdgeType[]);
-
-      window.requestAnimationFrame(() => {
-        fitView();
-      });
-    },
-    [nodes, edges, setNodes, setEdges, fitView]
-  );
-
-  window.requestAnimationFrame(() => {
-    fitView();
-  });
-
   return (
     <ReactFlow
-      nodes={nodes}
-      edges={edges}
-      onNodesChange={onNodesChange}
-      onEdgesChange={onEdgesChange}
+      nodes={layoutedNodes}
+      edges={layoutedEdges}
+      // onNodesChange={onNodesChange}
+      // onEdgesChange={onEdgesChange}
       fitView
       nodeTypes={nodeTypes}
     >
       <Background bgColor='#F0F2F6' color='#E4E5E7' variant={BackgroundVariant.Dots} size={3} />
-      <Panel position="top-left" className='flex flex-col gap-2'>
-        <Button onClick={() => onLayout('TB')}>vertical layout</Button>
-        <Button onClick={() => onLayout('LR')}>horizontal layout</Button>
-      </Panel>
+
     </ReactFlow>
   );
 };
