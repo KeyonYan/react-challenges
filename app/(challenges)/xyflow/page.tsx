@@ -19,7 +19,7 @@ import { edgesAtom, nodesAtom } from './nodes-edges';
 import { useAtom } from 'jotai';
 
 const LayoutFlow = () => {
-  const { fitView } = useReactFlow();
+  const { fitView, getNodes } = useReactFlow();
   const [nodes, setNodes] = useAtom(nodesAtom);
   const [edges, setEdges] = useAtom(edgesAtom);
   const nodeTypes = useMemo(() => ({
@@ -41,6 +41,11 @@ const LayoutFlow = () => {
       nodes={nodes}
       edges={edges}
       onNodeClick={handleNodeClick}
+      onNodesDelete={() => {
+        setTimeout(() => {
+          fitView({ nodes: nodes, duration: 800 })
+        }, 50)
+      }}
       onNodesChange={(changes) => {
         setNodes(applyNodeChanges(changes, nodes))
         setTimeout(() => {

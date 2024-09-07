@@ -1,24 +1,22 @@
 import { Handle, type NodeProps, Position, useReactFlow } from "@xyflow/react";
 import BaseNode, { findAllSubNodeAndEdgeIds } from "../BaseNode";
-import type { CustomNodeType } from "../nodes-edges";
+import { getLayoutedElements, type CustomNodeType } from "../nodes-edges";
 
 import styles from './index.module.css';
 import { Cross2Icon } from "@radix-ui/react-icons";
 
 function ChildNode(props: NodeProps<CustomNodeType>) {
-  const { deleteElements, getNodes, getEdges } = useReactFlow();
+  const { setNodes, setEdges, getNodes, getEdges } = useReactFlow();
   const { id, data } = props;
-  const { nodeIds, edgeIds } = findAllSubNodeAndEdgeIds(id, getNodes(), getEdges());
   const handleDelete = () => {
-    const deleteNode = getNodes().find(node => node.id === id);
-    const deleteSubNodes = getNodes().filter(node => nodeIds.includes(node.id));
-    const deleteSubEdges = getEdges().filter(edge => edgeIds.includes(edge.id));
-    if (deleteNode) {
-      deleteElements({
-        nodes: [deleteNode, ...deleteSubNodes],
-        edges: deleteSubEdges,
-      });
-    }
+    const { nodeIds, edgeIds } = findAllSubNodeAndEdgeIds(id, getNodes(), getEdges());
+    const newNodes = getNodes().filter(node => !(nodeIds.includes(node.id) || node.id === id));
+    const newEdges = getEdges().filter(edge => !(edgeIds.includes(edge.id) || edge.target === id));
+    const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(newNodes, newEdges, 'TB');
+    console.log("newNodes", newNodes);
+    console.log("newEdges", newEdges);
+    setNodes(layoutedNodes);
+    setEdges(layoutedEdges);
   }
   return (
     <BaseNode {...props}>

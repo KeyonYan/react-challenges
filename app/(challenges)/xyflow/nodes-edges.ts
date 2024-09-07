@@ -169,14 +169,6 @@ const initialEdges: Edge[] = [
     targetHandle: "input",
     animated: true,
   },
-  {
-    id: "e2c2d",
-    source: "2c",
-    target: "2d",
-    sourceHandle: "output",
-    targetHandle: "input",
-    animated: true,
-  },
 ];
 
 const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(
