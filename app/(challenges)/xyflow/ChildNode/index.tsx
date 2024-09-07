@@ -13,8 +13,6 @@ function ChildNode(props: NodeProps<CustomNodeType>) {
     const newNodes = getNodes().filter(node => !(nodeIds.includes(node.id) || node.id === id));
     const newEdges = getEdges().filter(edge => !(edgeIds.includes(edge.id) || edge.target === id));
     const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(newNodes, newEdges, 'TB');
-    console.log("newNodes", newNodes);
-    console.log("newEdges", newEdges);
     setNodes(layoutedNodes);
     setEdges(layoutedEdges);
   }

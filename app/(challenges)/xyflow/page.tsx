@@ -49,7 +49,8 @@ const LayoutFlow = () => {
       onNodesChange={(changes) => {
         setNodes(applyNodeChanges(changes, nodes))
         setTimeout(() => {
-          fitView({ nodes: nodes, duration: 800 })
+          const viewNodes = nodes.slice(-5);
+          fitView({ nodes: viewNodes, duration: 800 })
         }, 50)
       }}
       onEdgesChange={(changes) => {
