@@ -1,45 +1,47 @@
+const position = { x: 0, y: 0 };
+
 export const initialNodes = [
   {
     id: "1",
     type: "startNode",
     data: { title: "背景" },
-    position: { x: 0, y: 0 },
+    position,
   },
   {
     id: "2",
     type: "optionNode",
     data: { title: "角色" },
-    position: { x: 0, y: 100 },
+    position,
   },
   {
     id: "2a",
     type: "textNode",
     data: { title: "角色1" },
-    position: { x: 0, y: 200 },
+    position,
   },
   {
     id: "2b",
     type: "textNode",
     data: { title: "node 2b" },
-    position: { x: 0, y: 300 },
+    position,
   },
   {
     id: "2c",
     type: "optionNode",
     data: { title: "node 2c" },
-    position: { x: 0, y: 400 },
+    position,
   },
   {
     id: "2d",
     type: "endNode",
     data: { title: "node 2d" },
-    position: { x: 0, y: 500 },
+    position,
   },
   {
     id: "3",
     type: "textNode",
     data: { title: "node 3" },
-    position: { x: 200, y: 100 },
+    position,
   },
 ];
 export const initialEdges = [

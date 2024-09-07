@@ -1,5 +1,5 @@
 'use client'
-import Dagre from '@dagrejs/dagre';
+import dagre from '@dagrejs/dagre';
 import React, { useCallback, useMemo } from 'react';
 import {
   ReactFlow,
@@ -20,39 +20,53 @@ import OptionNode from './OptionNode';
 import StartNode from './StartNode';
 import EndNode from './EndNode';
 
-const getLayoutedElements = (nodes: any, edges: any, options: any) => {
-  const g = new Dagre.graphlib.Graph().setDefaultEdgeLabel(() => ({}));
-  g.setGraph({ rankdir: options.direction });
+const nodeWidth = 80;
+const nodeHeight = 36;
+const dagreGraph = new dagre.graphlib.Graph();
+dagreGraph.setDefaultEdgeLabel(() => ({}));
 
-  edges.forEach((edge: any) => g.setEdge(edge.source, edge.target));
-  nodes.forEach((node: any) =>
-    g.setNode(node.id, {
+const getLayoutedElements = (nodes, edges, direction = 'TB') => {
+  const isHorizontal = direction === 'LR';
+  dagreGraph.setGraph({ rankdir: direction });
+
+  nodes.forEach((node) => {
+    dagreGraph.setNode(node.id, { width: nodeWidth, height: nodeHeight });
+  });
+
+  edges.forEach((edge) => {
+    dagreGraph.setEdge(edge.source, edge.target);
+  });
+
+  dagre.layout(dagreGraph);
+
+  const newNodes = nodes.map((node) => {
+    const nodeWithPosition = dagreGraph.node(node.id);
+    const newNode = {
       ...node,
-      width: node.measured?.width ?? 0,
-      height: node.measured?.height ?? 0,
-    }),
-  );
-
-  Dagre.layout(g);
-
-  return {
-    nodes: nodes.map((node: any) => {
-      const position = g.node(node.id);
+      targetPosition: isHorizontal ? 'left' : 'top',
+      sourcePosition: isHorizontal ? 'right' : 'bottom',
       // We are shifting the dagre node position (anchor=center center) to the top left
       // so it matches the React Flow node anchor point (top left).
-      const x = position.x - (node.measured?.width ?? 0) / 2;
-      const y = position.y - (node.measured?.height ?? 0) / 2;
+      position: {
+        x: nodeWithPosition.x - nodeWidth / 2,
+        y: nodeWithPosition.y - nodeHeight / 2,
+      },
+    };
 
-      return { ...node, position: { x, y } };
-    }),
-    edges,
-  };
+    return newNode;
+  });
+
+  return { nodes: newNodes, edges };
 };
 
 const LayoutFlow = () => {
+  const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(
+    initialNodes,
+    initialEdges,
+  );
   const { fitView } = useReactFlow();
-  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+  const [nodes, setNodes, onNodesChange] = useNodesState(layoutedNodes);
+  const [edges, setEdges, onEdgesChange] = useEdgesState(layoutedEdges);
   const nodeTypes = useMemo(() => ({
     startNode: StartNode,
     endNode: EndNode,
@@ -60,18 +74,14 @@ const LayoutFlow = () => {
     optionNode: OptionNode
   }), [])
   const onLayout = useCallback(
-    (direction: any) => {
-      console.log(nodes);
-      const layouted = getLayoutedElements(nodes, edges, { direction });
+    (direction) => {
+      const { nodes: layoutedNodes, edges: layoutedEdges } =
+        getLayoutedElements(nodes, edges, direction);
 
-      setNodes([...layouted.nodes]);
-      setEdges([...layouted.edges]);
-
-      window.requestAnimationFrame(() => {
-        fitView({ duration: 1000 });
-      });
+      setNodes([...layoutedNodes]);
+      setEdges([...layoutedEdges]);
     },
-    [nodes, edges, setNodes, setEdges, fitView],
+    [nodes, edges],
   );
 
   return (
