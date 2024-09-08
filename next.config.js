@@ -9,7 +9,7 @@ const nextConfig = {
         port: '',
       }
     ]
-  }
+  },
   eslint: {
       ignoreDuringBuilds: true, // 忽略 eslint 检查
   },
