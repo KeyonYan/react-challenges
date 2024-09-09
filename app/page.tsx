@@ -40,7 +40,7 @@ export default function Home() {
         <Link href="/app-layout">
           <Card className='p-4'>App Layout</Card>
         </Link>
-        <Link href="/xyflow">
+        <Link href="/novel-web/xyflow">
           <Card className='p-4'>React Flow</Card>
         </Link>
         <Link href="/gridstack">

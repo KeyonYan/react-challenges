@@ -1,4 +1,4 @@
-import OptionIcon from "../icons/OptionIcon";
+import BranchIcon from "../icons/OptionIcon";
 import { type Edge, Handle, type Node, type NodeProps, Position, useReactFlow } from "@xyflow/react";
 import { PlusIcon } from "lucide-react";
 import styles from './index.module.css';
@@ -9,6 +9,14 @@ import ContentIcon from "../icons/ContentIcon";
 
 interface BaseNodeProps extends NodeProps<CustomNodeType> {
   children?: React.ReactNode
+}
+
+export const findAllParentNodeIds = (id: string, nodes: Node[], edges: Edge[]): string[] => {
+  const sourceEdge = edges.find((edge) => edge.target === id)
+  if (sourceEdge) {
+    return [...findAllParentNodeIds(sourceEdge.source, nodes, edges), id]
+  }
+  return []
 }
 
 export const findAllSubNodeAndEdgeIds = (id: string, nodes: Node[], edges: Edge[]): { nodeIds: string[], edgeIds: string[] } => {
@@ -103,11 +111,11 @@ export const BaseNode = ((props: BaseNodeProps) => {
   return (
     <div className="custom-node flex flex-col gap-2 text-node rounded-lg p-4 shadow-sm focus:outline-none focus:ring focus-ring-violet-300 hover:shadow-lg hover:bg-[#FBFBFC] bg-[#FBFBFC]">
       <div className="flex items-center gap-2">
-        {data.type === 'option' && <OptionIcon className="w-4 h-4" />}
+        {data.type === 'option' && <BranchIcon className="w-4 h-4" />}
         {data.type === 'content' && <ContentIcon className="w-4 h-4" />}
         <div>{data.title}</div>
-        {!leafNode && !data.collapsed && <TriangleDownIcon onClick={() => handleHiddenClick(id, !data.collapsed)} className="w-6 h-6" />}
-        {!leafNode && data.collapsed && <TriangleUpIcon onClick={() => handleHiddenClick(id, !data.collapsed)} className="w-6 h-6" />}
+        {!leafNode && !data.collapsed && <TriangleDownIcon onClick={() => handleHiddenClick(id, !data.collapsed)} className="prevent w-6 h-6" />}
+        {!leafNode && data.collapsed && <TriangleUpIcon onClick={() => handleHiddenClick(id, !data.collapsed)} className="prevent w-6 h-6" />}
       </div>
       {children}
       <Handle

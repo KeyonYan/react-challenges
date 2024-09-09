@@ -3,7 +3,13 @@ import { atom } from "jotai";
 import dagre from "@dagrejs/dagre";
 
 export type CustomNodeType = Node<
-  { title: string; collapsed: boolean; type: string; content: string },
+  {
+    title: string;
+    collapsed: boolean;
+    type: string;
+    content: string;
+    image?: string;
+  },
   "childNode" | "rootNode"
 >;
 
@@ -62,6 +68,7 @@ const initialNodes: CustomNodeType[] = [
       type: "content",
       content:
         "古代武侠背景下，主角是一个年轻的剑客，他有着不屈不挠的精神和坚定的信念。",
+      image: "",
     },
     position,
     hidden: false,
@@ -74,6 +81,7 @@ const initialNodes: CustomNodeType[] = [
       collapsed: false,
       type: "content",
       content: "第一章讲述了主角的剑术修炼和江湖历险。",
+      image: "",
     },
     position,
     hidden: false,
@@ -86,6 +94,7 @@ const initialNodes: CustomNodeType[] = [
       collapsed: false,
       type: "content",
       content: "第二章讲述了主角的剑术修炼和江湖历险。",
+      image: "",
     },
     position,
     hidden: false,
@@ -98,6 +107,7 @@ const initialNodes: CustomNodeType[] = [
       collapsed: false,
       type: "content",
       content: "第二章讲述了主角的剑术修炼和江湖历险。",
+      image: "",
     },
     position,
     hidden: false,
@@ -110,6 +120,7 @@ const initialNodes: CustomNodeType[] = [
       collapsed: false,
       type: "content",
       content: "第三章讲述了主角的剑术修炼和江湖历险。",
+      image: "",
     },
     position,
     hidden: false,
@@ -122,6 +133,7 @@ const initialNodes: CustomNodeType[] = [
       collapsed: false,
       type: "content",
       content: "第三章讲述了主角的剑术修炼和江湖历险。",
+      image: "",
     },
     position,
     hidden: false,
@@ -171,11 +183,8 @@ const initialEdges: Edge[] = [
   },
 ];
 
-const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(
-  initialNodes,
-  initialEdges,
-  "TB"
-);
+export const { nodes: layoutedNodes, edges: layoutedEdges } =
+  getLayoutedElements(initialNodes, initialEdges, "TB");
 
 export const nodesAtom = atom(layoutedNodes);
 export const edgesAtom = atom(layoutedEdges);
