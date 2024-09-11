@@ -177,7 +177,7 @@ const Chat = ({ nodeid }: { nodeid: string }) => {
       })
     }
 
-  }, []);
+  }, [node?.data.content, node?.data.title, node?.data.image, proChat]);
 
   const changeTitle = (e: any) => {
     setTitle(e.target.value);

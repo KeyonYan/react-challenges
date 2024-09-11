@@ -45,7 +45,7 @@ const LayoutFlow = () => {
         router.push(`/novel-web/aichat?nodeid=${node.id}`)
       }, 550)
     },
-    [fitView]
+    [fitView, router]
   )
   const getDefaultData = () => {
     return new Promise<{ nodes: CustomNodeType[], edges: Edge[] }>((resolve, reject) => {
@@ -93,7 +93,7 @@ const LayoutFlow = () => {
       .catch(error => {
         console.error('Error fetching novel data:', error);
       });
-  }, []);
+  }, [setEdges, setNodes]);
 
   return (
     <ReactFlow
