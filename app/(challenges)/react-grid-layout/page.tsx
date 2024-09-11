@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import _ from "lodash";
 import RGL, { WidthProvider } from "react-grid-layout";
-import "react-grid-layout/css/styles.css";
+import "./grid-layout.css";
 import "react-resizable/css/styles.css";
 import { Card } from "@/components/Card";
 
