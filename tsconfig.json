@@ -33,7 +33,6 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "app/novel-web/aichat/page.tsx"
   ],
   "exclude": [
     "node_modules"

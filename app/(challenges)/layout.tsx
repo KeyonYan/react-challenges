@@ -14,32 +14,32 @@ export default function ChallengesLayout({
   return (
     <div className="m-4">
       <Breadcrumb className="ml-4">
-          <BreadcrumbList>
-            <BreadcrumbItem>
-              <BreadcrumbLink href='/'>Home</BreadcrumbLink>
-            </BreadcrumbItem>
-            {
-              pathNames.map((link, index) => {
-                let href = `/${pathNames.slice(0, index+1).join('/')}`
-                let ItemActive = paths === href ? BreadcrumbPage : BreadcrumbLink
-                
-                return (
-                  <Fragment key={index}>
-                    <BreadcrumbSeparator>/</BreadcrumbSeparator>
-                    <BreadcrumbItem>
-                      <ItemActive href={link}>
-                        {link}
-                      </ItemActive>
-                    </BreadcrumbItem>
-                  </Fragment>
-                )
-              })
-            }
-          </BreadcrumbList>
-        </Breadcrumb>
-        <div className="m-4">
-          {children}
-        </div>
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink href='/'>Home</BreadcrumbLink>
+          </BreadcrumbItem>
+          {
+            pathNames.map((link, index) => {
+              let href = `/${pathNames.slice(0, index + 1).join('/')}`
+              let ItemActive = paths === href ? BreadcrumbPage : BreadcrumbLink
+
+              return (
+                <Fragment key={index}>
+                  <BreadcrumbSeparator>/</BreadcrumbSeparator>
+                  <BreadcrumbItem>
+                    <ItemActive href={link}>
+                      {link}
+                    </ItemActive>
+                  </BreadcrumbItem>
+                </Fragment>
+              )
+            })
+          }
+        </BreadcrumbList>
+      </Breadcrumb>
+      <div className="m-4">
+        {children}
+      </div>
     </div>
   )
 }

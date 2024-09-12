@@ -135,7 +135,7 @@ const LayoutFlow = () => {
 
 export default function XyFlowPage() {
   return (
-    <div className='w-[100vw] h-[100vh]'>
+    <div className='w-[95vw] h-[90vh]'>
       <ReactFlowProvider>
         <LayoutFlow />
       </ReactFlowProvider>

@@ -1,19 +1,23 @@
 'use client'
 import type React from 'react';
 import { type ReactNode, useEffect, useState } from 'react'
-import { Button, Input, message, Modal } from 'antd';
+import { Input, message, Modal } from 'antd';
 import { ArrowLeftOutlined, CheckCircleTwoTone, EditTwoTone, FileImageTwoTone, ReloadOutlined } from '@ant-design/icons';
-import styles from './index.module.css';
 import { type ChatItemProps, type ChatListProps, ProChat, ProChatProvider, useProChat } from '@ant-design/pro-chat';
 import TextArea from 'antd/es/input/TextArea';
 import { chatApi, extractKeywordsAndTranslateEnglishApi, mifyApi, text2imgApi } from './api/chat';
 import Text2ImgIcon from './icon/Text2ImgIcon';
 import BxBxsErrorIcon from './icon/BxBxsErrorIcon';
 import { ModelSelect, Text2ImageModelSelect } from './ModelSelect';
-import { useSearchParams } from 'next/navigation';
-import { nodesAtom } from '../../novel-web/xyflow/nodes-edges';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { edgesAtom, nodesAtom } from '../xyflow/nodes-edges';
 import { useAtom } from 'jotai';
 import { getMarkdownImgUrl, toMarkdownImgUrl } from './utils';
+import { Background } from '@xyflow/react';
+import { ArrowLeftIcon } from '@radix-ui/react-icons';
+import BranchIcon from '../xyflow/icons/OptionIcon';
+import { Button } from './ui/button';
+import { findAllParentNodeIds } from '../xyflow/BaseNode';
 
 const AiChatPage: React.FC = () => {
   const params = useSearchParams()
@@ -28,9 +32,10 @@ const AiChatPage: React.FC = () => {
 let text2ImgModelValueG = 'nd-text2img';
 
 const Chat = ({ nodeid }: { nodeid: string }) => {
+  const router = useRouter()
   const [nodes, setNodes] = useAtom(nodesAtom)
+  const [edges, setEdges] = useAtom(edgesAtom)
   const node = nodes.find(node => node.id === nodeid)
-  const [header, setHeader] = useState('');
   const [title, setTitle] = useState('');
   const proChat = useProChat();
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -158,7 +163,6 @@ const Chat = ({ nodeid }: { nodeid: string }) => {
   }
 
   useEffect(() => {
-    setHeader('AI对话');
     setTitle(node?.data.title ?? '');
     proChat.pushChat({
       id: new Date().getTime().toString(),
@@ -192,32 +196,42 @@ const Chat = ({ nodeid }: { nodeid: string }) => {
     setNodes(newNodes)
   }
 
-  // function toPrompt(node: D3TreeNode) {
-  //   const prompts = [];
-  //   while (node) {
-  //     const { title, content } = node.data;
-  //     prompts.unshift(`${title}：${content}`);
-  //     node = node.parent;
-  //   }
-  //   return prompts.join(' ');
-  // }
+  function toPrompt() {
+    if (!node) return ''
+    const rootNode = nodes.find((node) => node.type === 'rootNode')
+    const background = rootNode?.data.content ?? ''
+    const context: string[] = []
+    const parentNodeIds = findAllParentNodeIds(node.id, nodes, edges)
+    for (const id of parentNodeIds) {
+      const node = nodes.find((node) => node.id === id)
+      if (node) {
+        context.push(node.data.content)
+      }
+    }
+    const prompt = []
+    prompt.push(`背景：${background}`)
+    if (context.length > 0) {
+      prompt.push(`前文：${context.join('\n')}\n`)
+    }
+    return prompt.join('\n')
+  }
 
   const chatItemRenderConfig: ChatListProps['chatItemRenderConfig'] = {
     contentRender: (props: ChatItemProps<Record<string, any>>, defaultDom: ReactNode) => {
 
       const AssistantOptions = () => {
         return (
-          <div className={styles.operButtons}>
-            <Button onClick={() => saveChatItem(props)}>
+          <div className='mt-1 flex'>
+            <Button variant='outline' className='gap-1 m-1' onClick={() => saveChatItem(props)}>
               <CheckCircleTwoTone twoToneColor="#52c41a" />
               采纳
             </Button>
-            <Button onClick={() => editChatItem(props)}>
+            <Button variant='outline' className='gap-1 m-1' onClick={() => editChatItem(props)}>
               <EditTwoTone />
               编辑
             </Button>
             {
-              <Button onClick={() => text2img(props)}>
+              <Button variant='outline' className='gap-1 m-1' onClick={() => text2img(props)}>
                 <FileImageTwoTone
                   twoToneColor="#E69B54" />
                 生图
@@ -227,12 +241,12 @@ const Chat = ({ nodeid }: { nodeid: string }) => {
       }
       const ImageOptions = () => {
         return (
-          <div className={styles.operButtons}>
-            <Button onClick={() => saveChatItem(props)}>
+          <div>
+            <Button variant='outline' className='gap-1 m-1' onClick={() => saveChatItem(props)}>
               <CheckCircleTwoTone twoToneColor="#52c41a" />
               采纳
             </Button>
-            <Button onClick={() => text2img(props)}>
+            <Button variant='outline' className='gap-1 m-1' onClick={() => text2img(props)}>
               <ReloadOutlined />
               重新生成
             </Button>
@@ -242,7 +256,9 @@ const Chat = ({ nodeid }: { nodeid: string }) => {
 
       return (
         <div>
-          {defaultDom}
+          <div className='shadow-md m-1 bg-white rounded-md'>
+            {defaultDom}
+          </div>
           {props.originData?.role === 'assistant' && <AssistantOptions />}
           {props.originData?.role === 'image' && props.originData?.content !== '正在生成图片...' && <ImageOptions />}
         </div>
@@ -251,8 +267,8 @@ const Chat = ({ nodeid }: { nodeid: string }) => {
     avatarRender: (props: ChatItemProps<Record<string, any>>) => {
       if (props.originData?.role === 'image') {
         return (
-          <div className={styles.avatar}>
-            <span className={styles.imageAvatar}>
+          <div>
+            <span>
               <Text2ImgIcon className='w-6 h-6' />
             </span>
           </div>
@@ -260,8 +276,8 @@ const Chat = ({ nodeid }: { nodeid: string }) => {
       }
       if (props.originData?.role === 'error') {
         return (
-          <div className={styles.avatar}>
-            <span className={styles.imageAvatar}>
+          <div>
+            <span>
               <BxBxsErrorIcon className='w-6 h-6' />
             </span>
           </div>
@@ -274,112 +290,114 @@ const Chat = ({ nodeid }: { nodeid: string }) => {
   const backToHome = () => {
     const title = node?.data.title
     if (!title || title === undefined || title === '') {
-      messageApi.error('标题不能为空')
+      const newNodes = nodes.map(node => {
+        if (node.id === nodeid) {
+          return {
+            ...node,
+            data: {
+              ...node.data,
+              title: '未命名',
+            }
+          }
+        }
+        return node
+      })
+      setNodes(newNodes)
     }
-    //  else {
-    //   // router.push('/')
-    // }
+    router.push('/novel-web/xyflow')
   }
 
   return (
-    <div className={styles.container}>
+    <div className='relative flex flex-col h-[90vh]'>
       {contextHolder}
-      <div className={styles.header}>
-        <Button
-          type="text"
-          icon={<ArrowLeftOutlined />}
-          onClick={backToHome}
-          className={styles.backButton}
-        />
-        <span className={styles.back}>
-          {header}
-        </span>
-      </div>
-      <div className={styles.title}>
-        <div className={styles.titleLabel}>标题：</div>
+      <div className='flex flex-col p-4 gap-2 bg-[#F8FAFC] border-b border-slate-900/10'>
+        <div className='flex flex-row items-center gap-2'>
+          <ArrowLeftIcon className='w-5 h-5' onClick={backToHome} />
+          <span className='flex flex-row items-center gap-2 text-lg font-bold'>
+            <BranchIcon className='w-5 h-5' />
+            <span>节点 AI 创作</span>
+          </span>
+        </div>
         <Input
-          className={styles.titleInput}
+          className='text-lg'
+          prefix={<span className='text-[#6F6F6F]'>标题：</span>}
           placeholder="输入标题"
+          size='large'
           value={title}
           onChange={changeTitle}
         />
       </div>
 
-      <div className={styles.contentBox}>
-        <div className={styles.dialogue}>
-          <ProChat
-            helloMessage={initMessage}
-            chatItemRenderConfig={chatItemRenderConfig}
-            className={styles.chat}
-            actions={{
-              render: (defaultDoms) => {
-                return [
-                  <div key={new Date().getTime()} className={styles.modelSelectContainer}>
-                    <ModelSelect value={modelValue} onChange={(v) => setmodelValue(v)} />
-                    <Text2ImageModelSelect value={text2ImgModelValue} onChange={(v) => setText2ImgModelValue(v)} />
-                  </div>,
-                  ...defaultDoms,
-                ]
-              },
-              flexConfig: {
-                gap: 2,
-                direction: 'horizontal',
-                justify: 'space-between',
-              }
-            }}
-            request={async (msg) => {
-              console.log('modelValue: ', modelValue);
-              // const prompt = toPrompt(treeData.currentNode);
-              const prompt = ''
-              if (modelValue === 'mify') {
-                const streamPromise = mifyApi(`${prompt}\n${msg[msg.length - 1].content}`)
-                streamPromise.catch((err) => {
-                  messageApi.error('Mify接口调用失败，请稍后重试')
-                  console.log("err:", err)
-                  if (proChat.getChatLoadingId()) {
-                    // biome-ignore lint/style/noNonNullAssertion: <explanation>
-                    proChat.deleteMessage(proChat.getChatLoadingId()!);
-                    proChat.pushChat({
-                      id: new Date().getTime().toString(),
-                      content: '模型接口调用失败，请稍后重试',
-                      role: 'error',
-                    })
-                  }
+      <ProChat
+        helloMessage={initMessage}
+        chatItemRenderConfig={chatItemRenderConfig}
+        className='h-[100vh] bg-[#F8FAFC]'
+        actions={{
+          render: (defaultDoms) => {
+            return [
+              <div className='flex flex-col gap-2' key={new Date().getTime()}>
+                <ModelSelect value={modelValue} onChange={(v) => setmodelValue(v)} />
+                <Text2ImageModelSelect value={text2ImgModelValue} onChange={(v) => setText2ImgModelValue(v)} />
+              </div>,
+              ...defaultDoms,
+            ]
+          },
+          flexConfig: {
+            gap: 2,
+            direction: 'horizontal',
+            justify: 'space-between',
+          }
+        }}
+        request={async (msg) => {
+          const prompt = toPrompt()
+          console.log('prompt: ', prompt);
+          if (modelValue === 'mify') {
+            const streamPromise = mifyApi(`${prompt}\n${msg[msg.length - 1].content}`)
+            streamPromise.catch((err) => {
+              messageApi.error('Mify接口调用失败，请稍后重试')
+              console.log("err:", err)
+              if (proChat.getChatLoadingId()) {
+                // biome-ignore lint/style/noNonNullAssertion: <explanation>
+                proChat.deleteMessage(proChat.getChatLoadingId()!);
+                proChat.pushChat({
+                  id: new Date().getTime().toString(),
+                  content: '模型接口调用失败，请稍后重试',
+                  role: 'error',
                 })
-                return (await streamPromise)
               }
-              const streamPromise = chatApi(msg, prompt, modelValue)
-              streamPromise.catch((err) => {
-                messageApi.error('模型接口调用失败，请稍后重试')
-                if (proChat.getChatLoadingId()) {
-                  // biome-ignore lint/style/noNonNullAssertion: <explanation>
-                  proChat.deleteMessage(proChat.getChatLoadingId()!);
-                  proChat.pushChat({
-                    id: new Date().getTime().toString(),
-                    content: '模型接口调用失败，请稍后重试',
-                    role: 'error',
-                  })
-                }
-                console.log("err:", err)
+            })
+            return (await streamPromise)
+          }
+          const streamPromise = chatApi(msg, prompt, modelValue)
+          streamPromise.catch((err) => {
+            messageApi.error('模型接口调用失败，请稍后重试')
+            if (proChat.getChatLoadingId()) {
+              // biome-ignore lint/style/noNonNullAssertion: <explanation>
+              proChat.deleteMessage(proChat.getChatLoadingId()!);
+              proChat.pushChat({
+                id: new Date().getTime().toString(),
+                content: '模型接口调用失败，请稍后重试',
+                role: 'error',
               })
-              return (await streamPromise).toTextStreamResponse();
-            }}
-          />
-          <Modal
-            open={isEditModalOpen}
-            onOk={handleEditOk}
-            title="编辑"
-            onCancel={() => setIsEditModalOpen(false)}
-            okText="保存"
-            cancelText="取消"
-          >
-            <TextArea
-              rows={22}
-              value={editMessage.value}
-              onChange={onChangeEditMessage} />
-          </Modal>
-        </div>
-      </div>
+            }
+            console.log("err:", err)
+          })
+          return (await streamPromise).toTextStreamResponse();
+        }}
+      />
+      <Modal
+        open={isEditModalOpen}
+        onOk={handleEditOk}
+        title="编辑"
+        onCancel={() => setIsEditModalOpen(false)}
+        okText="保存"
+        cancelText="取消"
+      >
+        <TextArea
+          rows={16}
+          value={editMessage.value}
+          onChange={onChangeEditMessage} />
+      </Modal>
     </div>
   );
 };
