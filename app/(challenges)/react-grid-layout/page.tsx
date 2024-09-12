@@ -53,6 +53,7 @@ const NoCompactingLayout = (props) => {
       className={className}
       cols={cols}
       rowHeight={rowHeight}
+      preventCollision={true}
       verticalCompact={verticalCompact}
       {...otherProps}
     >
