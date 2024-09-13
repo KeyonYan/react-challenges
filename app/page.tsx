@@ -5,13 +5,17 @@ import { LogosReactMotion } from './icons/Icons'
 import { motion, useAnimate } from 'framer-motion'
 import { useState } from 'react'
 
+let isRotating = false
 export default function Home() {
   const [scope, animate] = useAnimate()
   const [speed, setSpeed] = useState(1)
   const handleIconClick = () => {
-    animate(scope.current, { rotate: 360 }, { duration: 1.5 / speed })
+    if (isRotating) return
+    isRotating = true
+    animate(scope.current, { rotate: 360 }, { duration: 1 / speed })
       .then(() => {
         animate(scope.current, { rotate: 0 }, { duration: 0 })
+        isRotating = false
       })
     setSpeed(speed => speed + 0.1)
   }
